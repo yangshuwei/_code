@@ -11,9 +11,13 @@ app.use((ctx)=>{
   // ctx.res.end('hello')
   // ctx.response.res.end('hello2')
   ctx.body = "hello"
+  ctx.body = "hello222"
    // 原生的req对象
   // console.log(ctx.request.req.url);
 })
 
+app.use((ctx)=>{
+  console.log(ctx.path)
+})
 
 app.listen(4000)

@@ -16,6 +16,13 @@ function defineGetter(target,key){
     },
   })
 }
+//ctx.body  => ctx.response.body   body 在response.js 中定义，挂载到
+// 
+// response:{
+//   _body: 'hello222',
+//   body: [Getter / Setter],
+//   res:{}
+// }
 
 // function defineGetter(target, key) {
 //   proto.__defineGetter__(key, function () { // defineProperty
