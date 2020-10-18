@@ -35,5 +35,6 @@ function defineGetter(target,key){
 //   })
 // }
 defineGetter('request','path')
+defineGetter('request','method')
 defineGetter('response','body')
 // defineSetter('response','body')

@@ -6,5 +6,9 @@ module.exports = {
     let { pathname } = url.parse(this.req.url) //this => ctx.request
     // console.log('-----'+pathname)
     return pathname;
+  },
+  get method(){
+    let {methodname} = this.req.method;
+    return methodname;
   }
 }

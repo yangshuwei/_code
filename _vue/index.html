@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+</head>
+<body>
+    <div id="app" style="color:red;fontSize:12px;">hello{{age}} {{name}}
+        <li>word{{name}}</li>
+    </div>
+    <script src="dist/umd/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el:'#app',
+            data(){
+                return {
+                   name:"ysw",
+                   age:30
+                }
+            }
+        })
+        // vm.$data.a.push(5)
+        // console.log(vm.$data.a.push({b:1}))
+        // vm.$data.a[0].a = 100
+        // vm.c.push({a:1},{b:2})
+        // console.log(vm.$data)
+        // vm.$data.a =2;/
+    </script>
+</body>
+</html>
