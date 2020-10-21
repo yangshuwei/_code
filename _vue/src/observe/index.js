@@ -1,5 +1,6 @@
 import { arrayMethods } from "./arrayMethods"
 import { defineProperty } from "../util.js"
+import Dep from "./dep";
 class Observe {
     constructor(value) {
         defineProperty(value, '__ob__', this) //再Observe实例上挂在一个__ob__属性 只要被观测过的属性都会存在这个属性 
@@ -25,9 +26,14 @@ class Observe {
 }
 function defineReactive(data, key, value) {
     observe(value) //如果值还是对象的话 要再进行观测  a:{b:{c:1}}  深层次观测孩子是不是对象
+    let dep = new Dep();
+    console.log(dep)
     Object.defineProperty(data, key, {
         get() {
             // console.log("------获取------")
+            if(dep.target){
+                dep.depend()
+            }
             return value;
         },
         set(newValue) {
@@ -35,6 +41,7 @@ function defineReactive(data, key, value) {
             if (newValue == value) return value;
             observe(value)  //用户手动修改的值为对象的时候 也要进行观测代理
             value = newValue;
+            dep.notify()
         }
     })
         ;
