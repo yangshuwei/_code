@@ -1,5 +1,5 @@
 import observe from "./observe/index";
-import { nextTick, proxy } from "./util";
+import { proxy } from "./util";
 
 export function initState(vm){
     const opts = vm.$options;
@@ -15,12 +15,4 @@ function initData(vm){
         proxy(vm,"$data",key)
     }
     observe(data)
-}
-
-
-
-export function stateMixin(Vue){
-    Vue.propertype.$nextTick = function(cd){
-        nextTick(cb)
-    }
 }

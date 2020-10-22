@@ -3,7 +3,6 @@ import { defineProperty } from "../util.js"
 import Dep from "./dep";
 class Observe {
     constructor(value) {
-        this.dep = new Dep();
         defineProperty(value, '__ob__', this) //再Observe实例上挂在一个__ob__属性 只要被观测过的属性都会存在这个属性 
 
         if (Array.isArray(value)) { //如果是数组的话  要对数组中的方法进行劫持重写  
@@ -26,16 +25,13 @@ class Observe {
     }
 }
 function defineReactive(data, key, value) {
-    let childDep = observe(value) //如果值还是对象的话 要再进行观测  a:{b:{c:1}}  深层次观测孩子是不是对象
-    let dep = new Dep(); //每个属性都有一个dep
+    observe(value) //如果值还是对象的话 要再进行观测  a:{b:{c:1}}  深层次观测孩子是不是对象
+    let dep = new Dep();
     Object.defineProperty(data, key, {
         get() {
             // console.log("------获取------")
             if(Dep.target){  //让这个属性记住这个watcher
                 dep.depend()
-                if (childDep){
-                    childDep.dep.depend()
-                }
             }
             return value;
         },
@@ -53,7 +49,7 @@ function defineReactive(data, key, value) {
 
 export default function observe(data) {
     if (typeof data !== "object" || data === null) {
-        return 
+        return data
     }
     if (data.__ob__) { //被观测过的数据  不再进行观测
         return data

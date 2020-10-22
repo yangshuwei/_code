@@ -4,6 +4,7 @@ export let arrayMethods = Object.create(oldArrayProtoMethods); //继承数组的
 methods.forEach(method => {
     // console.log(arrayMethods[method])
     arrayMethods[method] = function (...args) {
+        console.log('数组被劫持了')
         let result = oldArrayProtoMethods[method].apply(this, args);  //数组劫持也需要用原数组的方法，这里的this指的是 Observe实例中的value  
         let inserted;
         let ob = this.__ob__; 
@@ -18,7 +19,6 @@ methods.forEach(method => {
                 break;
         }
         if(inserted) ob.arrayObserve(inserted) //新增的数据如果是对象的话 要再次进行观测
-        ob.dep.notify()
         return result;
     }
 });

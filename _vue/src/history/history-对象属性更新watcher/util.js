@@ -76,26 +76,3 @@ export function mergeOptions(parent,child){
     }
     return options;
 }
-
-let callBacks = [];
-let pending = false;
-function flushCallbacks(){
-    while (callBacks.length){
-        let cb = callBacks.pop();
-        cb();
-    }
-    pending = true;
-}
-let timeFun = () =>{
-    setTimeout(() => {
-        flushCallbacks()
-    }, 0);
-}
-export function nextTick(cb){
-    callBacks.push(cb)
-    //这里是真正的异步更新操作 
-    if(!pending){
-        timeFun();
-        pending=true;
-    }
-}
