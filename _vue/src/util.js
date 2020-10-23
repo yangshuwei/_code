@@ -33,8 +33,8 @@ const strats = {};
 strats.data = function (parentVal, childVal){
     return childVal;
 }
-strats.computed = function(){}
-strats.watch = function(){}
+// strats.computed = function(){}
+// strats.watch = function(){}
 LIFECYCLE_HOOKS.forEach(hook=>{
     strats[hook] = mergeHook
 })
@@ -79,6 +79,18 @@ export function mergeOptions(parent,child){
 
 let callBacks = [];
 let pending = false;
+let timeFn;
+if(Promise){
+    timeFn = () =>{
+        Promise.resolve().then(flushCallbacks)
+    }
+}else {
+    timeFn = () => {
+        setTimeout(() => {
+            flushCallbacks()
+        }, 0);
+    }
+}
 function flushCallbacks(){
     while (callBacks.length){
         let cb = callBacks.pop();
@@ -86,16 +98,11 @@ function flushCallbacks(){
     }
     pending = true;
 }
-let timeFun = () =>{
-    setTimeout(() => {
-        flushCallbacks()
-    }, 0);
-}
 export function nextTick(cb){
     callBacks.push(cb)
     //这里是真正的异步更新操作 
     if(!pending){
-        timeFun();
+        timeFn();
         pending=true;
     }
 }

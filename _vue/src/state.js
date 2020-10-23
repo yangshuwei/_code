@@ -6,6 +6,9 @@ export function initState(vm){
     if(opts.data){
         initData(vm);
     }
+    if(opts.watch){
+        initWatch(vm)
+    }
 }
 
 function initData(vm){
@@ -17,10 +20,40 @@ function initData(vm){
     observe(data)
 }
 
+function initWatch(vm){
+    const watch = vm.$options.watch;
+    for(let key in watch){
+        const handle = watch[key]
+        if (Array.isArray(handle)){
+           handle.forEach(handler=>{
+               createWatch(vm, key, handler)
+           })
+        }else{
+            createWatch(vm, key, handle)
+        }
+    }
+    // if(Array.isArray(watch)){
 
+    // }else{
+    //     createWatch(vm,key,handle)
+    // }
+}
 
+function createWatch(vm, key, handler,options={}){
+    if(typeof handler == 'object'){
+        options = handler;
+        handler = handler.handler
+    }
+    if(typeof handler == 'string'){
+        handler = vm[handler]
+    }
+    return vm.$watch(handler, options)
+}
 export function stateMixin(Vue){
-    Vue.propertype.$nextTick = function(cd){
+    Vue.prototype.$nextTick = function(cb){
         nextTick(cb)
+    }
+    Vue.prototype.$watch = function (handler, options){
+        console.log(handler, options)
     }
 }
