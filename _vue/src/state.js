@@ -1,4 +1,5 @@
 import observe from "./observe/index";
+import Watcher from "./observe/watcher";
 import { nextTick, proxy } from "./util";
 
 export function initState(vm){
@@ -25,10 +26,21 @@ function initWatch(vm){
     for(let key in watch){
         const handle = watch[key]
         if (Array.isArray(handle)){
+            
            handle.forEach(handler=>{
+            //    console.log(handler) key=>b
+            //    'b': [
+            //        () => {
+            //            console.log(1)
+            //        },
+            //        () => {
+            //            console.log(2)
+            //        },
+            //    ],
                createWatch(vm, key, handler)
            })
         }else{
+            // console.log(handle);
             createWatch(vm, key, handle)
         }
     }
@@ -39,21 +51,24 @@ function initWatch(vm){
     // }
 }
 
-function createWatch(vm, key, handler,options={}){
+function createWatch(vm, exprOrFn, handler,options={}){
+    // console.log(exprOrFn) =》 key
     if(typeof handler == 'object'){
         options = handler;
         handler = handler.handler
     }
     if(typeof handler == 'string'){
-        handler = vm[handler]
+        handler = vm[handler] //到vm实例上获取d.d.d的值
+        
     }
-    return vm.$watch(handler, options)
+    return vm.$watch(exprOrFn,handler, options)
 }
 export function stateMixin(Vue){
     Vue.prototype.$nextTick = function(cb){
         nextTick(cb)
     }
-    Vue.prototype.$watch = function (handler, options){
-        console.log(handler, options)
+    Vue.prototype.$watch = function (exprOrFn,cb, options={}){
+        // console.log(handler, options)
+        new Watcher(this,exprOrFn,cb,{...options,user:true})
     }
 }

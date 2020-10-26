@@ -86,17 +86,15 @@ if(Promise){
     }
 }else {
     timeFn = () => {
-        setTimeout(() => {
-            flushCallbacks()
-        }, 0);
+        setTimeout(flushCallbacks);
     }
 }
 function flushCallbacks(){
     while (callBacks.length){
-        let cb = callBacks.pop();
+        let cb = callBacks.shift();
         cb();
     }
-    pending = true;
+    pending = false; //标识执行完毕
 }
 export function nextTick(cb){
     callBacks.push(cb)
