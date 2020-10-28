@@ -84,12 +84,16 @@ function updateChildren(oldChildren, newChildren, parent) {
   //1.在尾部添加
   // 循环 老的和新的  那个先结束 循环就停止  将多余的删除或者添加 （老的多新的少就删除）
   while (oldStartIndex <= oldEndIndex && newStartIndex <= newEndIndex) { //比价谁先循环完毕  停止
-    
+    if(!oldStartVnode){ //指针指向了null （null=>老的已经移动，原来位置用null代替）
+      oldStartVnode = oldChildren[++oldStartIndex]
+    }else if(!oldEndVnode){
+      oldEndVnode = oldChildren[--oldEndIndex]
+    }else 
     if (isSameVnode(oldStartVnode, newStartVnode)) { //如果俩人开始标签一样  就继续比较儿子 从头开始对比
       patch(oldStartVnode, newStartVnode) //更新属性 并且递归更新额儿子
       oldStartVnode = oldChildren[++oldStartIndex]  //指针后移比较下一个元素
       newStartVnode = newChildren[++newStartIndex]  //指针后移比较下一个元素
-    } else if (isSameVnode(oldEndVnode, newEndVnode)) { //如果俩人开始标签不一样结束标签 就继续比较儿子  从尾开始对比
+    } else if (isSameVnode(oldEndVnode, newEndVnode)) { //如果俩人开始标签不一样结束标签一样 就继续比较儿子  从尾开始对比
       patch(oldEndVnode, newEndVnode);
       oldEndVnode = oldChildren[--oldEndIndex]
       newEndVnode = newChildren[--newEndIndex]
@@ -97,7 +101,7 @@ function updateChildren(oldChildren, newChildren, parent) {
       patch(oldEndVnode, newStartVnode);
       parent.insertBefore(oldEndVnode.el, oldStartVnode.el);
       oldEndVnode = oldChildren[--oldEndIndex];
-      newStartVnode = newChildren[++newEndIndex];
+      newStartVnode = newChildren[++newStartIndex];
     } else if (isSameVnode(oldStartVnode, newEndVnode)) { //老的头和新的尾对比  老：A B C D  新：D C B A
       patch(oldStartVnode, newEndVnode);
       //将当前元素插入到尾部的下一个元素的前面
@@ -106,7 +110,17 @@ function updateChildren(oldChildren, newChildren, parent) {
       oldStartVnode = oldChildren[++oldStartIndex];
       newEndVnode = newChildren[--newEndIndex];
     }else{ //儿子没关系 暴力比对
+        let moveIndex = map[newStartVnode.key] //拿到开头虚拟节点的key
+        if(moveIndex == undefined){ //没有key复用 不需要移动
+          parent.insertBefore(createElm(newStartVnode,oldStartVnode.el))
+        }else{
+          let moveVNode = oldChildren[moveIndex]; //说明key相同，老的虚拟节点需要移动
+          patch(moveVNode,newStartVnode) //比较属性还有儿子
+          parent.insertBefore(moveVNode.el,oldStartVnode.el)
+          oldChildren[moveIndex] = null //移动这个老的元素，并且把当前位置设置为null  防止数组长度改变塌陷
 
+        }
+        newStartVnode = newChildren[++newStartIndex] //指针指向下一个新元素，不停的去老的里面找 
     }
   }
   if (newStartIndex <= newEndIndex) {

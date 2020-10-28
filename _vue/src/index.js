@@ -36,8 +36,6 @@ let render2 = compileToFunctions(`<div>
    <li style="background:red" key="A">A</li>
    <li style="background:yellow" key="B">B</li>
    <li style="background:pink" key="C">C</li>
-   
-   
 </div>`);
 let vnode2 = render2.call(vm2); // render方法返回的是虚拟dom
 
