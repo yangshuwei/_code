@@ -7,33 +7,33 @@
 
     </head>
     <body>
-        <div id="app" class="aa" style="color:red;fontSize:12px;">
-            hello
-            <li style="color:blue">{{a.a.a}}</li>
+        <!-- <div id="app" class="aa" style="color:red;fontSize:12px;">
+        hello
+            <li style="color:blue">{{a.a.a}}</li> -->
         </div>
         <script src="dist/umd/vue.js"></script>
         <script>
-            let vm = new Vue({
-                el: '#app',
-                data() {
-                    return {
-                      a:{a:{a:1}},
-                      b:2,
-                    }
-                },
-                watch:{
-                    "a.a.a":{
-                        handler:(newvalue,oldvalue)=>{
-                            console.log(newvalue,oldvalue)
-                        }
-                    },
+            // let vm = new Vue({
+            //     el: '#app',
+            //     data() {
+            //         return {
+            //           a:{a:{a:1}},
+            //           b:2,
+            //         }
+            //     },
+            //     watch:{
+            //         "a.a.a":{
+            //             handler:(newvalue,oldvalue)=>{
+            //                 console.log(newvalue,oldvalue)
+            //             }
+            //         },
 
-                }
-            })
-            vm.a.a.a = 100
-            setTimeout(()=>{
-            vm.a.a.a = 200
-            },1000)
+            //     }
+            // })
+            // vm.a.a.a = 100
+            // setTimeout(()=>{
+            // vm.a.a.a = 200
+            // },1000)
             
             // vm.$data.a.push(5)
             // console.log(vm.$data.a.push({b:1}))
