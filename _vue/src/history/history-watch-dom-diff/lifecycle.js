@@ -4,15 +4,8 @@ import { patch } from "./vdom/patch";
 export function lifecycleMixin(Vue){
     Vue.prototype._update = function(vnode){
         const vm = this;
-        const prevnode = vm._vnode; //如果首次渲染 _vnode 不存在
-        if (!prevnode){
-            //用新创建的元素替换老的元素
-            vm.$el = patch(vm.$el, vnode) //首次渲染
-            
-        }else{
-            vm.$el = patch(prevnode, vnode) //拿上一次的vnode 跟新的vnode 做dom-diff
-        }
-        vm._vnode = vnode; //保存上一次vnode
+        //用新创建的元素替换老的元素
+        vm.$el = patch(vm.$el,vnode)
         // vm._render()
     }
 }

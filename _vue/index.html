@@ -7,29 +7,44 @@
 
     </head>
     <body>
-        <!-- <div id="app" class="aa" style="color:red;fontSize:12px;">
-        hello
-            <li style="color:blue">{{a.a.a}}</li> -->
+         <div id="app" class="aa" style="color:red;fontSize:12px;">
+        
+            <li style="color:blue">{{firstName}}</li>
+            <li style="color:blue">{{lastName}}</li>
+            <li style="color:blue">{{fullName}}</li>
         </div>
         <script src="dist/umd/vue.js"></script>
         <script>
-            // let vm = new Vue({
-            //     el: '#app',
-            //     data() {
-            //         return {
-            //           a:{a:{a:1}},
-            //           b:2,
-            //         }
-            //     },
-            //     watch:{
-            //         "a.a.a":{
-            //             handler:(newvalue,oldvalue)=>{
-            //                 console.log(newvalue,oldvalue)
-            //             }
-            //         },
 
-            //     }
-            // })
+            //
+            let vm = new Vue({
+                el: '#app',
+                data() {
+                    return {
+                     firstName:"yang",
+                     lastName:"shuwei",
+                    }
+                },
+                computed:{
+                    fullName:function(){
+                        console.log('改变了初始值')
+                        return this.firstName + this.lastName
+                    }
+                }
+                // watch:{
+                //     "a.a.a":{
+                //         handler:(newvalue,oldvalue)=>{
+                //             console.log(newvalue,oldvalue)
+                //         }
+                //     },
+
+                // }
+            })
+            setTimeout(()=>{
+                vm.firstName = '100' //既要收集计算属性watcher 还要收集渲染watcher  否则在更改值后页面不更新
+            },1000)
+            
+            
             // vm.a.a.a = 100
             // setTimeout(()=>{
             // vm.a.a.a = 200
