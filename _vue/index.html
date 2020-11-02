@@ -8,15 +8,15 @@
     </head>
     <body>
          <div id="app" class="aa" style="color:red;fontSize:12px;">
-        
+            <aa></aa>
             <li style="color:blue">{{firstName}}</li>
             <li style="color:blue">{{lastName}}</li>
             <li style="color:blue">{{fullName}}</li>
         </div>
         <script src="dist/umd/vue.js"></script>
         <script>
-            Vue.component('my-button',{
-                name:"aa",
+            Vue.component('my-buottn',{
+                name:"aac",
                 template:"<button>点我啊</button>"
             });
             //
@@ -38,7 +38,6 @@
             },
                 computed:{
                     fullName:function(){
-                        console.log('改变了初始值')
                         return this.firstName + this.lastName
                     }
                 }

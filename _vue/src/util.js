@@ -63,7 +63,6 @@ function mergeHook(parentVal,childVal){
     }
 }
 export function mergeOptions(parent,child){
-    
     const options = {};
     for(let key in parent){ //儿子和父亲都有  
         mergeField(key) //合并字段
