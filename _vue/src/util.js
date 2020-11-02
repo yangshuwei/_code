@@ -33,6 +33,15 @@ const strats = {};
 strats.data = function (parentVal, childVal){
     return childVal;
 }
+strats.component = function (parentVal, childVal){
+    const res = Object.create(parentVal); //res.__proto__ = parentVal
+    if(childVal){
+        for(let key in childVal){
+            res[key] = childVal[key]  //组件就近原则策略，先找自己的  早找父亲上的
+        }
+    }
+    return res;
+}
 // strats.computed = function(){}
 // strats.watch = function(){}
 LIFECYCLE_HOOKS.forEach(hook=>{
@@ -65,13 +74,18 @@ export function mergeOptions(parent,child){
         }
     }
 
-    function mergeField(key){
-       
+    function mergeField(key){ //合并字段
+        //根据key （data,component ...）不同的策略来进行合并
         if (strats[key]){
             options[key] = strats[key](parent[key],child[key])
             
         }else{
-            options[key] = child[key]
+            if (child[key]){
+                options[key] = child[key]
+            }else{
+                options[key] = parent[key]
+            }
+            
         }
     }
     return options;

@@ -15,7 +15,10 @@
         </div>
         <script src="dist/umd/vue.js"></script>
         <script>
-
+            Vue.component('my-button',{
+                name:"aa",
+                template:"<button>点我啊</button>"
+            });
             //
             let vm = new Vue({
                 el: '#app',
@@ -25,6 +28,14 @@
                      lastName:"shuwei",
                     }
                 },
+                components:{
+                aa:{
+                    template:'<div>hello </div>'
+                },
+                bb:{
+                    template:'<div>world</div>'
+                }
+            },
                 computed:{
                     fullName:function(){
                         console.log('改变了初始值')
@@ -44,7 +55,7 @@
                 vm.firstName = '100' //既要收集计算属性watcher 还要收集渲染watcher  否则在更改值后页面不更新
             },1000)
             
-            
+            console.log(vm)
             // vm.a.a.a = 100
             // setTimeout(()=>{
             // vm.a.a.a = 200
