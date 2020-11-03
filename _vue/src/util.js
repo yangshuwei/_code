@@ -33,7 +33,7 @@ const strats = {};
 strats.data = function (parentVal, childVal){
     return childVal;
 }
-strats.component = function (parentVal, childVal){
+strats.components = function (parentVal, childVal){
     const res = Object.create(parentVal); //res.__proto__ = parentVal
     if(childVal){
         for(let key in childVal){
@@ -117,3 +117,18 @@ export function nextTick(cb){
         pending=true;
     }
 }
+function makeMap(str){
+    const mapping = {};
+    const list = str.split(',')
+    for(let i=0;i<list.length;i++){
+        mapping[list[i]] = true;
+    }
+    
+    return (key)=>{ //判断标签名是不是原生标签
+        return mapping[key];
+    }
+}
+export const isReservedTag = makeMap(
+    'a,div,img,image,text,span,p,button,input,textarea,ul,li'
+)
+isReservedTag('a')
