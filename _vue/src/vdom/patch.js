@@ -145,10 +145,22 @@ function updateChildren(oldChildren, newChildren, parent) {
   }
 
 }
+function createComponent(vnode){
+  let i = vnode.data;
+  if((i=i.hook)&&(i=i.init)){
+    i(vnode)
+  }
+  if(vnode.componentInstance){
+    return true;
+  }
+}
 export function createElm(vnode) {
   let { tag, children, data, key, text } = vnode;
   if (typeof tag == 'string') {
     vnode.el = document.createElement(tag); //创建元素 放到vnode.el上
+    if(createComponent(vnode)){
+      return vnode = vnode.componentInstance.$el
+    }
     updateProperties(vnode) //更新属性
     children.forEach(child => { //遍历儿子，将儿子渲染后的结果放到父亲种
       vnode.el.appendChild(createElm(child))

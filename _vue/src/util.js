@@ -30,9 +30,9 @@ export const LIFECYCLE_HOOKS = [
     'destroyed'
 ]
 const strats = {};
-strats.data = function (parentVal, childVal){
-    return childVal;
-}
+// strats.data = function (parentVal, childVal){
+//     return childVal;
+// }
 strats.components = function (parentVal, childVal){
     const res = Object.create(parentVal); //res.__proto__ = parentVal
     if(childVal){

@@ -35,62 +35,58 @@ class Watcher {
         return obj
       }
     }
-    this.value = this.get();
-  }
-  get() {
-    pushTarget(this) //Dep.target = watcher
-    let result = this.getter.call(this.vm); //调用exprOrFn =》vm._update(vm._render()) 方法  这时候要先取值，（走到属性拦截get方法里）在里面创建dep 收集属性watcher
-    popTarget()
-    return result;
-  }
-  addDep(dep) {
-    let id = dep.id;
-    if (!this.depsId.has(id)) {
-      this.deps.push(dep)
-      this.depsId.add(id)
-      dep.addSub(this) //让dep收集这个watcher
+        // 默认会先调用一次get方法 ，进行取值 将结果保留下来
+        this.value = this.lazy ? void 0 : this.get(); // 默认会调用get方法 
     }
-  }
-  update() {
-    //不能每次都调用get方法，get会重新渲染页面  对同一属性进行多次相同操作（赋值，修改，取值） 会生成多个id相同的watcher，也就是会多次更新相同的watcher
-
-    if (this.lazy) { //是计算属性
-      this.dirty = true; //页面从新渲染就可以获得最新的值了
-    } else {
-      queueWatcher(this) //把watcher暂存起来 
-      // this.get()
+    addDep(dep) {
+        let id = dep.id;
+        if (!this.depsId.has(id)) {
+            this.deps.push(dep);
+            this.depsId.add(id);
+            dep.addSub(this)
+        }
     }
-
-  }
-  run() {
-    let newValue = this.get() //用户修改属性值时产生的新值  vm.a.a.a=100
-    let oldValue = this.value; //用户初始化或者上一次修改的属性的值
-    this.value = newValue; //跟新老值
-    if (this.user) { //如果是用户watcher的话  让回调函数执行
-      this.cb.call(this.vm, newValue, oldValue)
+    get() {
+        // Dep.target = watcher
+        pushTarget(this); // 当前watcher实例
+        let result = this.getter.call(this.vm); // 调用exprOrFn  渲染页面 取值（执行了get方法）  render方法 with(vm){_v(msg)}
+        popTarget(); //渲染完成后 将watcher删掉了
+        return result
     }
-    // this.get()
-  }
-  evaluate() {
-    this.value = this.get();
-    this.dirty = false; //取过值后置位false 就表示取过值了 缓存
-  }
-  depend() {
-    //计算属性watcher会存储dep dep会存储watcher
-    //通过watcher找到对应的所有dep，让所有的dep都记住这个渲染watcher
-    let i = this.deps.length;
-    while (i--) {
-      this.deps[i].depend() //让dep存储渲染watcher
+    run() {
+        let newValue = this.get(); // 渲染逻辑
+        let oldValue = this.value;
+        this.value = newValue; // 更新一下老值
+        if (this.user) {
+            this.cb.call(this.vm, newValue, oldValue);
+        }
     }
-  }
+    update() {
+        if (this.lazy) { // 是计算属性
+            this.dirty = true;// 页面重新渲染就可以获得最新的值了
+        }else{
+            // 这里不要每次都调用get方法 get方法会重新渲染页面
+            queueWatcher(this); // 暂存的概念
+            //this.get(); // 重新渲染
+        }
+    }
+    evaluate() {
+        this.value = this.get();
+        this.dirty = false; // 取过一次值之后 就表示成已经取过值了
+    }
+    depend(){
+        // 计算属性watcher 会存储 dep  dep会存储watcher
+        
+        // 通过watcher找到对应的所有dep，让所有的dep 都记住这个渲染watcher
+        let i = this.deps.length;
+        while(i--){
+            this.deps[i].depend(); // 让dep去存储渲染watcher
+        }
+    }
 }
-
-
-
-let queue = [];
-let has = {}
-let pending = false; //
-
+let queue = []; // 将需要批量更新的watcher 存到一个队列中，稍后让watcher执行
+let has = {};
+let pending = false;
 
 function flushSchedulerQueue() {
   queue.forEach(watcher => {

@@ -8,39 +8,37 @@
     </head>
     <body>
          <div id="app" class="aa" style="color:red;fontSize:12px;">
-            <aa></aa>
-            <li style="color:blue">{{firstName}}</li>
-            <li style="color:blue">{{lastName}}</li>
-            <li style="color:blue">{{fullName}}</li>
+            hello
+            <my-button><my-button/>
         </div>
         <script src="dist/umd/vue.js"></script>
         <script>
-            Vue.component('my-buottn',{
-                name:"aac",
-                template:"<button>点我啊</button>"
+            
+            Vue.component('my-button',{
+                template:'<button>点我啊</button>'
             });
             //
             let vm = new Vue({
                 el: '#app',
-                data() {
-                    return {
+                data:{
+                
                      firstName:"yang",
                      lastName:"shuwei",
-                    }
+                    
                 },
-                components:{
-                aa:{
-                    template:'<div>hello </div>'
-                },
-                bb:{
-                    template:'<div>world</div>'
-                }
-            },
-                computed:{
-                    fullName:function(){
-                        return this.firstName + this.lastName
-                    }
-                }
+            //     components:{
+            //     aa:{
+            //         template:'<div>hello </div>'
+            //     },
+            //     bb:{
+            //         template:'<div>world</div>'
+            //     }
+            // },
+                // computed:{
+                //     fullName:function(){
+                //         return this.firstName + this.lastName
+                //     }
+                // }
                 // watch:{
                 //     "a.a.a":{
                 //         handler:(newvalue,oldvalue)=>{
@@ -50,9 +48,7 @@
 
                 // }
             })
-            setTimeout(()=>{
-                vm.firstName = '100' //既要收集计算属性watcher 还要收集渲染watcher  否则在更改值后页面不更新
-            },1000)
+           
             
             console.log(vm)
             // vm.a.a.a = 100

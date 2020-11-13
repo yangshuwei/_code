@@ -1,14 +1,14 @@
 import { mergeOptions } from "../util";
 
 export default function initExtend(Vue) {
-  let cid = 0;
+  const cid = 0;
   Vue.extend = function (extendOptions) {
     
     const Super = this;
     const Sub = function VueComponent(options) {
       this._init(options)
     }
-    Sub.cid = cid++;
+    Sub.cid = cid ++
     // 子类要继承父类原型上的方法, 原型继承
     Sub.prototype = Object.create(Super.prototype);
     Sub.prototype.constructor = Sub;

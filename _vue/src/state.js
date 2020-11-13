@@ -8,24 +8,33 @@ import Dep from "./observe/dep"
 
 export function initState(vm) {
     const opts = vm.$options;
+    if (opts.props) {
+        initProps(vm);
+    }
+    if (opts.methods) {
+        initMethods(vm);
+    }
     if (opts.data) {
         initData(vm);
     }
-    if (opts.watch) {
-        initWatch(vm)
-    }
     if (opts.computed) {
-        initComputed(vm)
+        initComputed(vm);
+    }
+    if (opts.watch) {
+        initWatch(vm);
     }
 }
+function initProps() {}
+function initMethods() {}
 
-function initData(vm) {
+function initData(vm) { // 数据的初始化操作
     let data = vm.$options.data;
-    vm.$data = data = typeof data === "function" ? data.call(vm) : data;
-    for (let key in data) {
-        proxy(vm, "$data", key)
+    // vm._data 保存用户的所有的data
+    vm._data = data = typeof data == 'function'?data.call(vm):data;
+    for(let key in data){
+        proxy(vm,'_data',key);
     }
-    observe(data)
+    observe(data); // 让这个对象重新定义set 和 get
 }
 
 
@@ -42,29 +51,33 @@ function initComputed(vm) {
         defineComputed(vm, key, userDef) //属性与实例关联 Object.defineProperty 
     }
 }
-const sharedPropertyDefninition = {}
-
-function defineComputed(target, key, userDef) {
-    if (typeof userDef == 'function') { //如果是函数  只有get方法  没有set
-        sharedPropertyDefninition.get = createComputedGetter(key); //默认调用了取值操作 get 走到observe/index get方法 
-    } else {
-        sharedPropertyDefninition.get = createComputedGetter(key); //如果传过来的是对象  加缓存
-        sharedPropertyDefninition.set = userDef.set;
+function defineComputed(target,key,userDef){  // 这样写是没有缓存的
+    const sharedPropertyDefinition = {
+        enumerable: true,
+        configurable: true,
+        get:()=>{},
+        set:()=>{}
     }
-    Object.defineProperty(target, key, sharedPropertyDefninition) //关联到当前实例上，这样才会走 get set
+    if(typeof userDef == 'function'){
+        sharedPropertyDefinition.get = createComputedGetter(key) // dirty 来控制是否调用userDef
+    }else{
+        sharedPropertyDefinition.get = createComputedGetter(key); // 需要加缓存
+        sharedPropertyDefinition.set = userDef.set;
+    }
+    Object.defineProperty(target,key,sharedPropertyDefinition)////关联到当前实例上，这样才会走 get set
 }
+function createComputedGetter(key){
+    return function (){ // 此方法是我们包装的方法，每次取值会调用此方法
+        const watcher = this._computedWatchers[key]; // 拿到这个属性对应watcher
+        if(watcher){
+            if(watcher.dirty){ // 默认肯定是脏的
+                watcher.evaluate(); // 对当前watcher求值
+            }
 
-function createComputedGetter(key) { //此方法是自己包装的方法，每次取值都会调用
-    return function() {
-        const watcher = this._computedWatchers[key]; //拿到这个属性对应的计算属性watcher
-        if (watcher) {
-            if (watcher.dirty) { //脏数据，说明需要计算
-                watcher.evaluate() //对当前watcher求值 也就是运行 computed中对应的方法
+            if (Dep.target) { // 说明还有渲染watcher，也应该一并的收集起来
+                watcher.depend();
             }
-            if (Dep.target) { //说明还有渲染watcher 也应该一起收集起来
-                watcher.depend()
-            }
-            return watcher.value; //返回对当前watcher求值  fullNmae
+            return watcher.value; // 默认返回watcher上存的值
         }
     }
 }
@@ -99,7 +112,7 @@ function initWatch(vm) {
     // }
 }
 
-function createWatch(vm, exprOrFn, handler, options = {}) {
+function createWatch(vm, exprOrFn, handler, options) {
     // console.log(exprOrFn) =》 key
     if (typeof handler == 'object') {
         options = handler;
@@ -115,10 +128,11 @@ export function stateMixin(Vue) {
     Vue.prototype.$nextTick = function(cb) {
         nextTick(cb)
     }
-    Vue.prototype.$watch = function(exprOrFn, cb, options = {}) {
-        // console.log(handler, options)
-        new Watcher(this, exprOrFn, cb, { ...options,
-            user: true
-        })
+    Vue.prototype.$watch = function (exprOrFn,cb,options = {}) {
+        // 数据应该依赖这个watcher  数据变化后应该让watcher从新执行
+        let watcher = new Watcher(this,exprOrFn,cb,{...options,user:true});
+        if(options.immediate){
+            cb(); // 如果是immdiate应该立刻执行
+        }
     }
 }

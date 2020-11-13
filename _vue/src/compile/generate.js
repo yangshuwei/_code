@@ -54,17 +54,17 @@ function gen(node) {
 }
 function genChildren(el) {
     const children = el.children;
-    if (children) {
-        return children.map(child => {  //将所有转换后的儿子用 ， 拼接起来
-            return gen(child)
-        }).join(',')
+    if (children) { // 将所有转化后的儿子用逗号拼接起来
+        return children.map(child => gen(child)).join(',')
     }
 
 }
 export function generate(el) {
     let children = genChildren(el);// 儿子的生成
-    let code = `_c('${el.tag}',${el.attrs.length ? `${genProps(el.attrs)}` : 'undefined'
-        }${children ? `,${children}` : ''
+    let code = `_c('${el.tag}',${
+    el.attrs.length ? `${genProps(el.attrs)}` : 'undefined'
+    }${
+    children ? `,${children}` : ''
         })`;
     return code
 }

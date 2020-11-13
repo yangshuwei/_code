@@ -32,7 +32,10 @@ function createComponent(vm, tag, data, key, children, Ctor){
         Ctor = baseCtor.extend(Ctor)
     }
     data.hook = {
-        init(){}
+        init(vnode){
+            let child = vnode.componentInstance = new Ctor({}) //vm.$el
+            child.$mount();
+        }
     }
     return vnode(`vue-component-${Ctor.cid}-${tag}`,data,key,undefined,undefined,{Ctor,children})
 }

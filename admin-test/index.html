@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+<div id="app">
+	<el-container>
+
+    <el-header style="text-align: right; font-size: 12px;background: #999">
+      <el-dropdown>
+        <i class="el-icon-setting" style="margin-right: 15px"></i>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item>查看</el-dropdown-item>
+          <el-dropdown-item>新增</el-dropdown-item>
+          <el-dropdown-item>删除</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+      <span>王小虎</span>
+    </el-header>
+    </el-container>
+    <el-container>
+    <el-aside width="200px" style="background-color: #263238;">
+    <el-menu>
+   
+		<el-menu-item index="home" @click="$router.push({ name: 'home' })">
+	      <span slot="title">首页</span>
+	    </el-menu-item>
+	    <el-submenu v-for="menu in menuList" :key="menu.menuId" :index ="menu.menuId">
+	        <template slot="title">
+	          <i class="el-icon-location"></i>
+	          <span>{{menu.name}}</span>
+	        </template>
+	          <el-menu-item  v-for="item in menu.list" :index="item.menuId"  v-on:click="openUrl(item.url,item.name)">{{item.name}}</el-menu-item>
+	      </el-submenu>
+      
+    </el-menu>
+  </el-aside>
+    <el-main>
+      <el-tabs type="card" :closable="true"  @tab-remove="removeTabHandle">
+                        <el-tab-pane v-for="item in mainTabs" :label="item.name" >
+                            <iframe :src="iframeUrl" width="100%" height="800px" frameborder="0"></iframe>
+                        </el-tab-pane>
+                    </el-tabs>
+    </el-main>
+
+  </el-container>
+</div>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script>
+  	new Vue({
+  		el:"#app",
+  		data(){
+  			return{
+  				iframeUrl:"",
+          tabName:"",
+          mainTabs:[],
+  				menuList:[{
+    "menuId": "139",
+    "parentId": 0,
+    "name": "会员管理",
+    "list": [
+        {
+            "menuId": "140",
+            "parentId": 139,
+            "name": "用户列表",
+            "url": "./components/home/index.html",
+        },
+        {
+            "menuId": "142",
+            "parentId": 139,
+            "name": "会员详情",
+            "url": "memberManage/memberList/memberDetail",
+        },
+        {
+            "menuId": "143",
+            "parentId": 139,
+            "name": "设备登录记录",
+            "url": "memberManage/memberList/deviceLog",
+        }
+    ]
+},{
+    "menuId": "146",
+    "parentId": 0,
+    "name": "商家管理",
+    "list": [
+        {
+            "menuId": "147",
+            "parentId": 146,
+            "name": "店铺列表",
+            "url": "merchantsManage/merchantsList/index",
+        },
+        {
+            "menuId": "148",
+            "parentId": 146,
+            "name": "店铺详情",
+            "url": "merchantsManage/merchantsList/merchantsDetail",
+            "list": null
+        },
+        {
+            "menuId": "149",
+            "parentId": 146,
+            "name": "商品列表",
+            "url": "merchantsManage/merchantsList/goodsList",
+        },
+        
+    ]
+}
+]
+  			}
+  		},
+  		methods: {
+                openUrl: function (url,msg) {
+                    var isOpen = this.mainTabs.some( item => item.name === msg)
+                    if(!isOpen){
+                      this.mainTabs.push({name:msg});
+                      
+                      
+                    }
+                    this.tabName = msg
+                    this.iframeUrl=url;
+                },
+                removeTabHandle(tabName){
+                  this.mainTabs.splice(this.mainTabs.findIndex(item=>item.name == tabName),1)
+                },
+                selectedTabHandle (tab) {
+                tab = this.mainTabs.filter(item => item.name === tab.name)
+                console.log(tab)
+        
+      },
+            }
+  	})
+  </script>
+</body>
+</html>

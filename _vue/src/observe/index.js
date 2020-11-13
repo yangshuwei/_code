@@ -46,13 +46,13 @@ function defineReactive(data, key, value) {
             value = newValue;
             dep.notify() //异步更新
         }
-    })
-        ;
+    });
+    // 数组的更新 去重  优化  组件渲染
 }
 
 
-export default function observe(data) {
-    if (typeof data !== "object" || data === null) {
+export  function observe(data) {
+    if (typeof data != "object" || data == null) {
         return 
     }
     if (data.__ob__) { //被观测过的数据  不再进行观测
