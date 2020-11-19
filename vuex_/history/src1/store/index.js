@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import Vuex from '../vuex/index.js'
-import a from "./a"
-import b from "./b"
 
 Vue.use(Vuex)
 
@@ -30,8 +28,5 @@ export default new Vuex.Store({
 
 		}
 	},
-	modules: {
-		a,
-		b
-	}
+	modules: {}
 })

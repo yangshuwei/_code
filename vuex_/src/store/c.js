@@ -1,17 +1,9 @@
-import Vue from 'vue'
-import Vuex from '../vuex/index.js'
-import a from "./a"
-import b from "./b"
-
-Vue.use(Vuex)
-
-export default new Vuex.Store({
+export default {
 	state: {
 		age: 30
 	},
 	getters: {
 		myAge(state) {
-			console.log(1)
 			return state.age + 20
 		}
 	},
@@ -31,7 +23,6 @@ export default new Vuex.Store({
 		}
 	},
 	modules: {
-		a,
-		b
+
 	}
-})
+}
