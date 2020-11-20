@@ -11,7 +11,7 @@ export class Store {
 		// this.getters = {};
 
 		this._modules = new ModeluCollection(options);
-
+		console.log(this._modules)
 		// forEachValue(options.getters, (fn, key) => {
 		// 	computed[key] = () => {
 		// 		return fn(this.state)
