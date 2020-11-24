@@ -1,5 +1,6 @@
 import c from "./c";
 export default {
+	namespaced:true,
 	state: {
 		age: 30
 	},

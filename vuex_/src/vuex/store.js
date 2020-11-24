@@ -3,15 +3,80 @@ import {
 } from './util'
 import ModeluCollection from './module/module-collection'
 let Vue;
+function installModule(store, rootState, path, module) {
 
+	const namespace = store._modules.getNamespaced(path)
+
+	if (path.length > 0) {
+		let parent = path.slice(0, -1).reduce((memo, current) => {
+			return memo[current]
+		}, rootState)
+		Vue.set(parent, path[path.length - 1], module.state)
+	}
+
+	module.forEachMutation((mutation, key) => {
+		store._mutations[namespace + key] = (store._mutations[namespace + key] || []);
+		store._mutations[namespace + key].push((payload) => {
+			mutation.call(store, module.state, payload)
+		})
+	})
+
+	module.forEachAction((action, key) => {
+		store._actions[namespace + key] = (store._actions[namespace + key] || []);
+		store._actions[namespace + key].push((payload) => {
+			action.call(store, store, payload)
+		})
+	})
+
+	module.forEachGetter((getter, key) => {
+		store._wrappedGetters[namespace + key] = function () {
+			return getter(module.state)
+		}
+	})
+
+	module.forEachChild((child, key) => {
+		installModule(store, rootState, path.concat(key), child)
+	})
+}
+
+function resetStoreVM(store, state) {
+	const computed = {};
+	store.getters = {};
+
+	forEachValue(store._wrappedGetters, (fn, key) => {
+		computed[key] = () => {
+			return fn()
+		}
+		Object.defineProperty(store.getters, key, {
+			get: () => store._vm[key]
+		})
+	})
+
+
+	store._vm = new Vue({
+		data: {
+			$$state: state
+		},
+		computed
+	})
+}
 export class Store {
+	
 	constructor(options) {
 		const state = options.state;
+		this._actions = {}
+		this._mutations = {}
+		this._wrappedGetters = {}
 		// const computed = {}
 		// this.getters = {};
-
+	
 		this._modules = new ModeluCollection(options);
-		console.log(this._modules)
+		// console.log(this._modules)
+
+		installModule(this, state, [], this._modules.root)
+
+
+		resetStoreVM(this, state)
 		// forEachValue(options.getters, (fn, key) => {
 		// 	computed[key] = () => {
 		// 		return fn(this.state)
@@ -58,10 +123,10 @@ export class Store {
 
 	commit = (type, payload) => {
 		//发布
-		this.mutations[type](payload)
+		this._mutations[type].forEach(mutation => mutation.call(this, payload))
 	}
 	dispatch = (type, payload) => {
-		this.actions[type](payload)
+		this._actions[type].forEach(action => action.call(this, payload))
 	}
 }
 
