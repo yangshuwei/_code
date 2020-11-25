@@ -8,8 +8,8 @@ export default function install(Vue){
             if(this.$options.router){ //根实例上（new Vue）上是否有router
                 this._routerRoot = this; //给当前根组件增加一个属性 routerRoot代表自己
                 this._router = this.$options.router;
+                this._router.init()
             }else{
-                console.log(this)
                 this._routerRoot = this.$parent && this.$parent._routerRoot;
             }
 

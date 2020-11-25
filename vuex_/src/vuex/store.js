@@ -63,13 +63,14 @@ function resetStoreVM(store, state) {
 export class Store {
 	
 	constructor(options) {
+		debugger
 		const state = options.state;
 		this._actions = {}
 		this._mutations = {}
 		this._wrappedGetters = {}
 		// const computed = {}
 		// this.getters = {};
-	
+		
 		this._modules = new ModeluCollection(options);
 		// console.log(this._modules)
 
