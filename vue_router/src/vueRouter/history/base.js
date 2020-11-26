@@ -1,4 +1,5 @@
 export function createRoute(record, location) {
+  console.log('record-------',record)
   //[/about,/about/a] 
   let res = [];
   if (record) {
@@ -20,7 +21,7 @@ export function createRoute(record, location) {
 // }
 
 function runQueue(queue,iterator,cb){
-  console.log(iterator)
+  // console.log(iterator)
    // 异步迭代
   function step(index){
     if (index >= queue.length) return cb();
@@ -43,6 +44,7 @@ class History {
   transitionTo(location, onComplete) {
     //这里拿到路径后就可以 根据路径  去渲染对应的模板了 this.router.matcher.match(location)
     let route = this.router.match(location);
+    console.log(route)
     if (location == this.current.path && route.matched.length == this.current.matched.length) {
       return; //防止重复跳转，访问路径没有匹配到对应的组件 conponent 就终止跳转
     }
@@ -57,7 +59,7 @@ class History {
     }
     runQueue(queue,iterator,()=>{
 
-
+      console.log(111)
       this.updateRoute(route);
 
       onComplete && onComplete()
