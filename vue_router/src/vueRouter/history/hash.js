@@ -24,5 +24,10 @@ class HashHistory extends History{
       this.transitionTo(getHash())
     })
   }
+  push(location){
+    this.transitionTo(location,()=>{
+      window.location.hash = location
+    })
+  }
 }
 export default HashHistory;

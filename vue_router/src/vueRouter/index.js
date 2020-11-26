@@ -16,6 +16,13 @@ class VueRouter {
         this.history = BowserHistory(this);
         break;
     }
+    this.beforeHooks = [];
+  }
+  push(to){
+    this.history.push(to)
+  }
+  match(location){
+    return this.matcher.match(location)
   }
   init(app) {
 
@@ -31,10 +38,17 @@ class VueRouter {
       history.getCurrentLocation(), // 获取当前的位置
       setUpHashListener //监听路由变化，变了就跳转路由
     )
-
+    
+    history.listen((route) => { // 每次路径变化 都会调用此方法  订阅
+      app._route = route;
+    }) 
     // setupListener  放到hash里取
     // transitionTo  放到base中 做成公共的方法
     // getCurrentLocation // 放到自己家里  window.location.hash / window.location.path
+  }
+  beforeEach(fn){
+    
+    this.beforeHooks.push(fn) //订阅
   }
 }
 VueRouter.install = install;

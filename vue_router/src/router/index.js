@@ -36,5 +36,16 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
-router.matcher.addRoutes([{path:'/auth',component:{render:(h)=>''}}])
+router.beforeEach((from,to,next)=>{
+  console.log(1)
+  setTimeout(() => {
+    next()
+  }, 1000);
+})
+router.beforeEach((from, to, next) => {
+  console.log(2)
+  setTimeout(() => {
+    next()
+  }, 1000);
+})
 export default router
