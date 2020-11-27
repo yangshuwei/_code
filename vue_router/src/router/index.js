@@ -1,4 +1,5 @@
 import Vue from 'vue'
+// import VueRouter from 'vue-router'
 import VueRouter from '../vueRouter'
 import Home from '../views/Home.vue'
 
@@ -8,18 +9,22 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: { title: '新增客户' },
   },
   {
     path: '/about',
     name: 'About',
-    
+    beforeEnter: (from, to, next) => {
+      console.log('beforeEnter')
+      next()
+    },
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
-    children:[
+    children: [
       {
-        path:'a',
-        component:{
-          render:(h)=><h1>about a</h1>
+        path: 'a',
+        component: {
+          render: (h) => <h1>about a</h1>
         }
       }, {
         path: 'b',
@@ -36,16 +41,23 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
-router.beforeEach((from,to,next)=>{
-  console.log(1)
-  setTimeout(() => {
-    next()
-  }, 1000);
-})
-router.beforeEach((from, to, next) => {
-  console.log(2)
-  setTimeout(() => {
-    next()
-  }, 1000);
-})
+// router.beforeEach((to, from, next) => {
+//   if (to.meta && to.meta.title) {
+//     document.title = ((to.meta && to.meta.title))
+//   }
+//   next()
+// })
+// router.beforeResolve((from, to, next) => {
+//   console.log('beforeResolve')
+//   setTimeout(() => {
+//     next()
+//   });
+// })
+// router.afterEach((from, to, next) => {
+//   console.log('afterEach')
+//   setTimeout(() => {
+//     next()
+//   });
+// })
+
 export default router

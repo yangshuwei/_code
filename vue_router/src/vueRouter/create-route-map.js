@@ -1,6 +1,7 @@
 export default function createRouteMap(routes,oldPathMap){
   // console.log(routes)
   let pathMap = oldPathMap || Object.create(null)
+
   routes.forEach(route=>{
     addRouteRecord(route, pathMap)
   })
@@ -13,7 +14,8 @@ function addRouteRecord(route, pathMap,parent){
   let record = {
     path,
     component:route.component,
-    parent
+    parent,
+    beforeEnter: route.beforeEnter
   }
   if(!pathMap[path]){
     pathMap[path] = record;
