@@ -1,5 +1,5 @@
 export function createRoute(record, location) {
-  console.log('record-------',record)
+  // console.log('record-------',record)
   //[/about,/about/a] 
   let res = [];
   if (record) {
@@ -44,11 +44,11 @@ class History {
     //这里拿到路径后就可以 根据路径  去渲染对应的模板了 this.router.matcher.match(location)
     let route = this.router.match(location);
     
-    console.log(route)
+    // console.log(route)
     if (location == this.current.path && route.matched.length == this.current.matched.length) {
       return; //防止重复跳转，访问路径没有匹配到对应的组件 conponent 就终止跳转
     }
-    console.log(route)
+    // console.log(route)
     let beforeEnters = [];
     // if (this.current.matched.length>0)
     // this.current.matched.forEach(enter=>{
@@ -60,13 +60,17 @@ class History {
     // })
     // befroeEach  要在路由跳转后更新current之前一次执行
     const activated = route.matched
-    // if(activated){
-    //   activated.map(m=>{
-    //     beforeEnters.push(m.beforeEnter)
-    //   })
-    // }
-    let queue = [].concat(this.router.beforeHooks, beforeEnters)
-    console.log(queue, this.router.beforeHooks, beforeEnters)
+    if(activated){
+      activated.map(m=>{
+        if (typeof m.beforeEnter == 'function'){
+          console.log('``````````',m)
+          beforeEnters.push(m.beforeEnter)
+        }
+        
+      })
+    }
+    let queue = [].concat(this.router.beforeHooks,beforeEnters)
+    console.log(queue)
     const iterator = (hook,next)=>{
       
       hook(this.current,route,()=>{ //hook => 用户传递的方法 也就是  beforeEach中的(from,to,next)=>{}
@@ -75,7 +79,7 @@ class History {
     }
     runQueue(queue,iterator,()=>{
 
-      console.log(111)
+      // console.log(111)
       this.updateRoute(route);
 
       onComplete && onComplete()
