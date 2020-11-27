@@ -10,6 +10,7 @@ export default function createMatcher(routes) {
   }
   function match(location) {
     let record = pathMap[location]
+console.log('-------',location);
     if (record) {
       return createRoute(record,{
         path:location
