@@ -1,30 +1,38 @@
 
 const fs = require('fs')
-
+const path = require('path')
 const read = (...args) => {
     return new Promise((resolve, reject) => {
         // fs.readFile(...args, function (err, data) {
         //     if (err) return reject(err);
         //     resolve(data)
         // })
-        reject('ok')
+        resolve('ok')
     })
 }
  Promise = require('./promise')
-let p = read('./name.txt', 'utf8')
+let p = read(path.resolve(__dirname,'name.txt'), 'utf8')
 
 let p2 = p.then((data) => {
     // throw new Error('');
-    return 100
+    return new Promise((resolve,reject)=>{
+        resolve( new Promise((resolve,reject)=>{
+            resolve( new Promise((resolve,reject)=>{
+                resolve( new Promise((resolve,reject)=>{
+                    setTimeout(() => {
+                        resolve('ok');
+                    }, 1000);
+               }))
+           }))
+       }))
+   })
     // return read(data,'utf8')
 }, err => {
     console.log('`````', err)
     return 200
 })
-p2.then((s) => {
-    console.log('s', s)
-}, (e) => {
-    console.log('e', e)
+p2.then().then().then(data=>{
+    console.log(data)
 })
 
 

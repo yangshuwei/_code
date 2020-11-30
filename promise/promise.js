@@ -1,4 +1,18 @@
 const STATUS = { PENDING: 'PENDING', FULFILED: 'FULFILED', REJECTED: 'REJECTED' }
+function resolvePromise(x, promise2, resolve, reject) {
+    if((typeof x==='object' && x!==null) || typeof x === 'function'){
+        let then = x.then;
+        if(typeof then === 'function'){
+            then.call(x,(y)=>{
+                resolvePromise(y,promise2,resolve,reject)
+            },(r)=>{
+                reject(r)
+            })
+        }
+    }else{
+        resolve(x)
+    }
+}
 class Promise {
     constructor(executor) {
         this.value = "";
@@ -23,30 +37,44 @@ class Promise {
                 this.onRejectedCallbacks.forEach(fn => fn())
             }
         }
-        executor(reslove, reject)
-
+        try {
+            executor(reslove, reject)
+        } catch (error) {
+            reject(error)
+        }
     }
     then(onFulfilled, onRejected) {
+        onFulfilled = typeof onFulfilled == 'function' ? onFulfilled : (data)=>{
+            return data
+        }
+        onRejected = typeof onRejected === 'function' ?onRejected :(err)=>{
+            throw err
+        }
         let promise2 = new Promise((resolve, reject) => {
-        
+
             if (this.status == STATUS.FULFILED) {
-                let x = onFulfilled(this.value)
-                // console.log(x)
-                try {
-                    resolve(x)
-                } catch (error) {
-                    reject(error)
-                }
-                
+                setTimeout(() => {
+                    let x = onFulfilled(this.value)
+                    try {
+
+                        resolvePromise(x, promise2, resolve, reject)
+                    } catch (error) {
+                        reject(error)
+                    }
+                }, 0);
+
+
             }
             if (this.status == STATUS.REJECTED) {
-                let x = onRejected(this.reason)
-                
-                try {
-                    resolve(x)
-                } catch (error) {
-                    reject(error)
-                }
+                setTimeout(() => {
+                    let x = onRejected(this.reason)
+                    try {
+                        resolvePromise(x, promise2, resolve, reject)
+                    } catch (error) {
+                        reject(error)
+                    }
+                }, 0);
+
             }
 
             if (this.status == STATUS.PENDING) {
@@ -56,25 +84,41 @@ class Promise {
                 //     }, 1000);
                 // })
                 this.onResolvedCallbacks.push(() => {
-                    let x = onFulfilled(this.value)
-                    try {
-                        resolve(x)
-                    } catch (error) {
-                        reject(error)
-                    }
+                    setTimeout(() => {
+                        let x = onFulfilled(this.value)
+                        try {
+                            resolvePromise(x, promise2, resolve, reject)
+                        } catch (error) {
+                            reject(error)
+                        }
+                    }, 0);
+
                 })
                 this.onRejectedCallbacks.push(() => {
-                    let x = onRejected(this.reason)
-                    try {
-                        resolve(x)
-                    } catch (error) {
-                        reject(error)
-                    }
+                    setTimeout(() => {
+                        let x = onRejected(this.reason)
+                        try {
+                            resolvePromise(x, promise2, resolve, reject)
+                        } catch (error) {
+                            reject(error)
+                        }
+                    }, 0);
+
                 })
             }
         })
 
         return promise2
+    }
+    static resolve(data){
+        return new Promise(resolve=>{
+            resolve(data)
+        })
+    }
+    static reject(reason){
+        return new Promise((resolve,reject)=>{
+            reject(reason)
+        })
     }
 }
 
