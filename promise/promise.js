@@ -21,6 +21,9 @@ class Promise {
         this.onResolvedCallbacks = []; // 存放成功的回调的 
         this.onRejectedCallbacks = []; // 存放失败的回调的
         const reslove = (val) => {
+            if(val instanceof Promise){
+                return val.then(resolve, reject)
+            }
             if (this.status == STATUS.PENDING) {
                 this.status = STATUS.FULFILED
                 this.value = val;

@@ -1,32 +1,47 @@
 const fs = require('fs')
 const path = require('path')
-const { resolve } = require('./promise')
+const { reject } = require('./promise')
 
 
-
-Promise.all = function (arr) {
-    return new Promise((resolve,reject)=>{
-      let times = 0;
-      let result = []
-      for (let i = 0; i < arr.length; i++) {
-        let p = arr[i]
-        if(typeof p.then ==='function'){
-          p.then(data=>{
-            result[i] = data
-          },reject)
-        }else{
-          result[i] = p
-        }
-        ++times;
-        console.log(result.length)
-        
-      }
-      if(times == arr.length){
-        resolve(result)
-      }
-    })
-  
+Promise.race = function(promise){
+  return new Promise((resolve,reject)=>{
+    for(let i=0;i<promise.length;i++){
+      Promise.resolve(promise[i]).then((value)=>{
+        resolve(value)
+        return 
+      },(err)=>{
+        reject(err)
+        return 
+      })
+    }
+  })
 }
+
+// Promise.all = function (arr) {
+//     return new Promise((resolve,reject)=>{
+//       let times = 0;
+//       let result = []
+//       function processData(index, val) {
+//             result[index] = val;
+//             if(++times === arr.length){
+//                 resolve(result)
+//             }
+//         }
+//       for (let i = 0; i < arr.length; i++) {
+//         let p = arr[i]
+//         if(typeof p.then ==='function'){
+//           p.then(data=>{
+//             processData(i, data)
+//           },reject)
+//         }else{
+//           processData(i, p)
+//         }
+        
+        
+//       }
+//     })
+  
+// }
 // function isPromise (val){
 //     return val && (typeof val.then == 'function')
 // }
@@ -53,16 +68,62 @@ Promise.all = function (arr) {
 //     })
 // }
 
-// const Promise = require('./promise')
-let p1 = Promise.resolve(100)
-// let p2 = Promise.reject(200)
-let p3 = Promise.resolve(300)
-
-Promise.all([p1, 200, p3]).then((data) => {
-  console.log(data)
-}, (err) => {
-  console.log(err)
+Promise.prototype.finally = function(callback){
+  console.log(this)
+    return this.then(data=>{
+      console.log(data)
+      return Promise.resolve(callback()).then(()=>{
+        return data
+      })
+    },err=>{
+      return Promise.resolve(callback()).then(()=>{
+        throw err
+      })
+    })
+}
+// Promise.prototype.finally = function (callback) {
+//   return this.then((data) => {
+//     // 让函数执行 内部会调用方法，如果方法是promise需要等待他完成
+//     return Promise.resolve(callback()).then(() => data)
+//   }, err => {
+//     return Promise.resolve(callback()).then(() => { throw err })
+//   })
+// }
+Promise.resolve(123).finally((data) => { // 这里传入的函数 无论如何都会执行
+  console.log('finally');
+  // finally 可以返回一个promise 
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve('ok');
+    }, 1000);
+  })
+}).then(data => {
+  console.log('s:' + data);
+}, err => {
+  console.log('e:' + err);
 })
+// const Promise = require('./promise')
+// let p1 = new Promise((resolve,reject)=>{
+//   setTimeout(() => {
+//     resolve(100)
+//   }, 2200);
+// })
+// let p2 = new Promise((resolve,reject)=>{
+//   setTimeout(() => {
+//     reject(200)
+//   }, 2000);
+// })
+// let p3 = new Promise((resolve,reject)=>{
+//   setTimeout(() => {
+//     resolve(300)
+//   }, 3000);
+// })
+
+// Promise.race([p1, p2, p3]).then((data) => {
+//   console.log(data)
+// }, (err) => {
+//   console.log('err',err)
+// })
 // p.then(data=>{
 //   console.group(data)
 // },e=>{
