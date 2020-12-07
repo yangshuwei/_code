@@ -1,10 +1,11 @@
+
 function render(vdom,container){
     // console.log(vdom,container)
     let dom = createDOM(vdom);
     container.appendChild(dom);
 }
 
-function createDOM(vdom){
+export function createDOM(vdom){
     if (typeof vdom === 'string' || typeof vdom === 'number') {
         return document.createTextNode(vdom);
     }
@@ -18,8 +19,14 @@ function createDOM(vdom){
     //     return document.createTextNode(vdom);
     // } else 
     if (typeof type == 'function') {
-        console.log('函数式组件')
-        return mountFunctionComponent(vdom)
+    
+        if(type.isReactComponent){
+            return mountClassComponent(vdom)
+        }else{
+            return mountFunctionComponent(vdom)
+        }
+        
+        
     }else{
         dom = document.createElement(type)
     }
@@ -36,18 +43,28 @@ function createDOM(vdom){
 function reconcileChildren(childVdom,parentDom){
     childVdom.forEach(child => render(child,parentDom));
 }
-function updateProps(dom,props){
-    for(let key in props){
+function updateProps(dom,newProps){
+    for (let key in newProps){
         if(key === 'children') continue;
        if(key === 'style'){
-           let objStyle = props[key];
+           let objStyle = newProps[key];
            for(let key in objStyle){
                 dom.style[key] = objStyle[key]
            }
+       }else if(key.startsWith('on')){
+           dom[key.toLocaleLowerCase()] = newProps[key]
        }else{
-        dom[key] = props[key]
+           dom[key] = newProps[key]
        }
     }
+}
+function mountClassComponent(vdom){
+    let {type,props} = vdom;
+    let classInstance = new type(props)
+    let renderVdom = classInstance.render();
+    const dom = createDOM(renderVdom);
+    classInstance.dom = dom; //setState时用到  更新页面
+    return dom;
 }
 function mountFunctionComponent(vdom){
     let {type,props} = vdom;

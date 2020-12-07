@@ -1,3 +1,4 @@
+import Component from './Component'
 function createElement(type,config,children){
     if(config){
         delete config._owner;
@@ -14,6 +15,7 @@ function createElement(type,config,children){
     }
 }
 let React = {
-    createElement
+    createElement,
+    Component
 }
 export default React
