@@ -2,14 +2,15 @@ import { createDOM } from './react-dom';
 import {isFunction} from './utils';
 
 export let updateQueue = {
-  updaters:[],
+  updaters:new Set(),
   isBatchingUpdate:false, //是否处于批量更新状态，也就是异步更新状态
   add(updater){
-    this.updaters.push(updater)
+    this.updaters.add(updater)
   },
   batchUpdate(){
     this.updaters.forEach(updater=>updater.updateComponent())
     this.isBatchingUpdate = false;
+    this.updaters.clear()
   }
 }
 class Updater{
@@ -19,16 +20,17 @@ class Updater{
   }
   addState(partialState){
     this.pendingStates.push(partialState);
-
-    
+    this.emitUpdate()
+  }
+  emitUpdate(){
     updateQueue.isBatchingUpdate ? updateQueue.add(this) : this.updateComponent();
-    
   }
   updateComponent(){
     let {classInstance,pendingStates} = this;
     if(pendingStates.length>0){
-      classInstance.state = this.getState(); //获取新老状态的合并
-      classInstance.forceUpdate() //调用类组件实例上的强制更新方法  更新组件
+      // classInstance.state = this.getState(); //获取新老状态的合并
+      // classInstance.forceUpdate() //调用类组件实例上的强制更新方法  更新组件
+      shouldUpdate(classInstance, this.getState())
     }
   }
   getState(){
@@ -48,6 +50,13 @@ class Updater{
     return state;
   }
 }
+function shouldUpdate(classInstance,nextState){
+  classInstance.state = nextState; //不管页面是否要更新 ，state都会变成最新的
+  if (classInstance.shouldComponentUpdate && !classInstance.shouldComponentUpdate(classInstance.props,nextState)){
+    return;
+  }
+    classInstance.forceUpdate()
+}
 class Component {
   static isReactComponent = true;
   constructor(props) {
@@ -59,6 +68,9 @@ class Component {
     this.updater.addState(newState) //将传入的state添加到更新器队列中
   }
   forceUpdate(){
+    if(this.componentWillUpdate){ //生命周期函数 在生成新的虚拟dom之前调用
+      this.componentWillUpdate();
+    }
     const renderVdom = this.render(); //调用类组件中的render方法  获取最新的虚拟dom
     updateClassComponent(this, renderVdom)
   }
@@ -68,6 +80,10 @@ function updateClassComponent(classInstance,renderVdom){
  
   let newDom = createDOM(renderVdom) //生成新的真实DOM
   oldDom.parentNode.replaceChild(newDom, oldDom) //用新的真实dom替换老的
+
+  if (classInstance.componentDidUpdate) { //生命周期函数，在创建真实dom并且挂载到页面之后调用
+    classInstance.componentDidUpdate();
+  }
   classInstance.dom = newDom; //把新真实dom挂在实例上，以便下次对比更新
 }
 export default Component;

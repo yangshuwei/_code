@@ -1,3 +1,4 @@
+import { addEvent } from "./event";
 
 function render(vdom,container){
     // console.log(vdom,container)
@@ -13,7 +14,7 @@ export function createDOM(vdom){
         return '';
     }
    
-    let {type,props} = vdom
+    let {type,props,ref} = vdom
     let dom
     // if (typeof vdom === 'string' || typeof vdom === 'number') {
     //     return document.createTextNode(vdom);
@@ -38,6 +39,9 @@ export function createDOM(vdom){
     }else if(Array.isArray(props.children)){
         reconcileChildren(props.children,dom)
     }
+    if(ref){
+        ref.current = dom
+    }
     return dom;
 }
 function reconcileChildren(childVdom,parentDom){
@@ -51,8 +55,9 @@ function updateProps(dom,newProps){
            for(let key in objStyle){
                 dom.style[key] = objStyle[key]
            }
-       }else if(key.startsWith('on')){
-           dom[key.toLocaleLowerCase()] = newProps[key]
+       }else if(key.startsWith('on')){ //对于事件对象要做合成事件处理
+        //    dom[key.toLocaleLowerCase()] = newProps[key]
+           addEvent(dom, key.toLocaleLowerCase(), newProps[key])
        }else{
            dom[key] = newProps[key]
        }
@@ -61,9 +66,16 @@ function updateProps(dom,newProps){
 function mountClassComponent(vdom){
     let {type,props} = vdom;
     let classInstance = new type(props)
+    if(classInstance.componentWillMount){
+        classInstance.componentWillMount()
+    }
+    //调用实例的render方法得到一个虚拟DOM对象或者说React元素 div
     let renderVdom = classInstance.render();
-    const dom = createDOM(renderVdom);
+    const dom = createDOM(renderVdom); //生成真实dom元素
     classInstance.dom = dom; //setState时用到  更新页面
+    if(classInstance.componentDidMount){
+        classInstance.componentDidMount()
+    }
     return dom;
 }
 function mountFunctionComponent(vdom){
