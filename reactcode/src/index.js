@@ -8,8 +8,14 @@ import ReactDOM from './react-dom';
 //   }
 // },"hello")
 
-function Welcome(props){
-  return <h1>hello,<span>{props.name}</span></h1>
+// function Welcome(props){
+//   return <h1>hello,<span>{props.name}</span></h1>
+// }
+
+class Welcome extends React.Component{
+  render(){
+  return <h1>hello,{this.props.name}</h1>
+  }
 }
 ReactDOM.render(
   <Welcome name="word"/>,

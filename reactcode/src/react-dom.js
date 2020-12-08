@@ -5,6 +5,7 @@ function render(vdom,container){
 }
 
 function createDOM(vdom){
+    console.log(vdom)
     if (typeof vdom === 'string' || typeof vdom === 'number') {
         return document.createTextNode(vdom);
     }
@@ -17,10 +18,16 @@ function createDOM(vdom){
     // if (typeof vdom === 'string' || typeof vdom === 'number') {
     //     return document.createTextNode(vdom);
     // } else 
-    if (typeof type == 'function') {
+    if (typeof type === 'function') {
         console.log('函数式组件')
-        return mountFunctionComponent(vdom)
+        if(type.isReactComponent){
+            return mountClassComponent(vdom)
+        }else{
+            return mountFunctionComponent(vdom)
+        }
+        
     }else{
+        //原声dom标签
         dom = document.createElement(type)
     }
     updateProps(dom, props)
@@ -49,10 +56,21 @@ function updateProps(dom,props){
        }
     }
 }
+/**
+ * 
+ * @param {*} vdom 
+ */
+function mountClassComponent(vdom){
+    let {type,props} = vdom;
+    let instances = new type(props) // new Welcome()
+    console.log(instances)
+    let renderVdom = instances.render() //执行累组件中的render函数得到 虚拟dom {type:"h1",props:{children:[]}}
+    return createDOM(renderVdom)
+}
 function mountFunctionComponent(vdom){
     let {type,props} = vdom;
     let renderVdom = type(props)
-    console.log(renderVdom)  //将函数组件解析成{type:"h1",props:{children:[]}}
+    // console.log(renderVdom)  //将函数组件解析成{type:"h1",props:{children:[]}}
     return createDOM(renderVdom)
 }
 let ReactDOM = {render}
