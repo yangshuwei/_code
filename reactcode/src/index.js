@@ -8,16 +8,79 @@ import ReactDOM from './react-dom';
 //   }
 // },"hello")
 
-// function Welcome(props){
-//   return <h1>hello,<span>{props.name}</span></h1>
-// }
+class Welcome extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { number: 0 }
+    // this.a = React.createRef()
+    // this.b = React.createRef()
+    // this.result = React.createRef()
+  }
+  handleClick = (event) => {
+    this.setState({number:this.state.number+1})
+    // this.setState({ number: this.state.number+1})
+    // console.log(this.state.number)
+    // this.setState({ number: this.state.number + 1 })
+    // console.log(this.state.number)
+    // setTimeout(() => {
+    //   this.setState({ number: this.state.number + 1 })
+    //   console.log(this.state.number)
+    //   this.setState({ number: this.state.number + 1 })
+    //   console.log(this.state.number)
+    //   // console.log(event)
+    // }, 0);
+  }
+  clickDiv = ()=>{
+    console.log('clickDiv')
+  }
+  add = () =>{
+    this.result.current.value = this.a.current.value + this.b.current.value
+  }
+  componentWillMount(){
+    console.log('1.componentWillMount')
+  }
+  
+  render() {
+    console.log('render---')
+    return (
+      <div>
+        {/* <h1>hello,{this.state.number}</h1>
+        <button onClick={(event) => this.handleClick(event) }>+</button> */}
 
-class Welcome extends React.Component{
+        {/* <input ref={this.a} /> + <input ref={this.b} /> <button onClick={this.add}> = </button> <input ref={this.result}/> */}
+      <p>number:{this.state.number}</p>
+      {
+        this.state.number == 4 ? null : <Child />
+      }
+      <button onClick={this.handleClick}>+</button>
+      </div>
+    )
+  }
+  componentDidMount() {
+    console.log('2.componentDidMount')
+  }
+  shouldComponentUpdate(perS,nextS){
+    console.log('shouldComponentUpdate-----')
+    return nextS.number%2 === 0
+  }
+  componentWillUpdate(){
+    console.log('----componentWillUpdate')
+  }
+  componentDidUpdate(){
+    console.log('componentDidUpdate')
+  }
+}
+class Child extends React.Component{
+  constructor(){
+    super()
+  }
   render(){
-  return <h1>hello,{this.props.name}</h1>
+    return(
+      <div>Child</div>
+    )
   }
 }
 ReactDOM.render(
-  <Welcome name="word"/>,
+  <Welcome />,
   document.getElementById('root')
 );

@@ -1,4 +1,4 @@
-import { compareTwoVdom } from './react-dom';
+import { createDOM } from './react-dom';
 import {isFunction} from './utils';
 
 export let updateQueue = {
@@ -71,25 +71,19 @@ class Component {
     if(this.componentWillUpdate){ //生命周期函数 在生成新的虚拟dom之前调用
       this.componentWillUpdate();
     }
-    // const renderVdom = this.render(); //调用类组件中的render方法  获取最新的虚拟dom
-    // updateClassComponent(this, renderVdom)
-    let newVdom = this.render();
-    let currentVdom = compareTwoVdom(this.dom.parentNode,this.oldVdom,newVdom);
-    let oldVdom = currentVdom
-    if (this.componentDidUpdate) { //生命周期函数，在创建真实dom并且挂载到页面之后调用
-      this.componentDidUpdate();
-    }
+    const renderVdom = this.render(); //调用类组件中的render方法  获取最新的虚拟dom
+    updateClassComponent(this, renderVdom)
   }
 }
-// function updateClassComponent(classInstance,renderVdom){
-//   const oldDom = classInstance.dom; //获取老的真实dom
+function updateClassComponent(classInstance,renderVdom){
+  const oldDom = classInstance.dom; //获取老的真实dom
  
-//   let newDom = createDOM(renderVdom) //生成新的真实DOM
-//   oldDom.parentNode.replaceChild(newDom, oldDom) //用新的真实dom替换老的
+  let newDom = createDOM(renderVdom) //生成新的真实DOM
+  oldDom.parentNode.replaceChild(newDom, oldDom) //用新的真实dom替换老的
 
-//   if (classInstance.componentDidUpdate) { //生命周期函数，在创建真实dom并且挂载到页面之后调用
-//     classInstance.componentDidUpdate();
-//   }
-//   classInstance.dom = newDom; //把新真实dom挂在实例上，以便下次对比更新
-// }
+  if (classInstance.componentDidUpdate) { //生命周期函数，在创建真实dom并且挂载到页面之后调用
+    classInstance.componentDidUpdate();
+  }
+  classInstance.dom = newDom; //把新真实dom挂在实例上，以便下次对比更新
+}
 export default Component;
