@@ -1,86 +1,67 @@
 import React from './react';
 import ReactDOM from './react-dom';
-
-// let element  = React.createElement('h1',{
-//   className:'title',
-//   style:{
-//     color:"red"
-//   }
-// },"hello")
-
-class Welcome extends React.Component {
+class Counter extends React.Component { // 他会比较两个状态相等就不会刷新视图 PureComponent是浅比较
+  static defaultProps = {
+    name: '珠峰架构'
+  };
   constructor(props) {
-    super(props)
+    super(props);
     this.state = { number: 0 }
-    // this.a = React.createRef()
-    // this.b = React.createRef()
-    // this.result = React.createRef()
+    console.log('Counter 1.constructor')
   }
-  handleClick = (event) => {
-    this.setState({number:this.state.number+1})
-    // this.setState({ number: this.state.number+1})
-    // console.log(this.state.number)
-    // this.setState({ number: this.state.number + 1 })
-    // console.log(this.state.number)
-    // setTimeout(() => {
-    //   this.setState({ number: this.state.number + 1 })
-    //   console.log(this.state.number)
-    //   this.setState({ number: this.state.number + 1 })
-    //   console.log(this.state.number)
-    //   // console.log(event)
-    // }, 0);
+  componentWillMount() { // 取本地的数据 同步的方式：采用渲染之前获取数据，只渲染一次
+    console.log('Counter 2.componentWillMount');
   }
-  clickDiv = ()=>{
-    console.log('clickDiv')
+  componentDidMount() {
+    console.log('Counter 4.componentDidMount');
   }
-  add = () =>{
-    this.result.current.value = this.a.current.value + this.b.current.value
+  handleClick = () => {
+    this.setState({ number: this.state.number + 1 });
+  };
+  // react可以shouldComponentUpdate方法中优化 PureComponent 可以帮我们做这件事
+  shouldComponentUpdate(nextProps, nextState) { // 代表的是下一次的属性 和 下一次的状态
+    console.log('Counter 5.shouldComponentUpdate');
+    return nextState.number % 2 === 0;
+    // return nextState.number!==this.state.number; //如果此函数种返回了false 就不会调用render方法了
+  } //不要随便用setState 可能会死循环
+  componentWillUpdate() {
+    console.log('Counter 6.componentWillUpdate');
   }
-  componentWillMount(){
-    console.log('1.componentWillMount')
+  componentDidUpdate() {
+    console.log('Counter 7.componentDidUpdate');
   }
-  
   render() {
-    console.log('render---')
+    console.log('Counter 3.render');
     return (
       <div>
-        {/* <h1>hello,{this.state.number}</h1>
-        <button onClick={(event) => this.handleClick(event) }>+</button> */}
-
-        {/* <input ref={this.a} /> + <input ref={this.b} /> <button onClick={this.add}> = </button> <input ref={this.result}/> */}
-      <p>number:{this.state.number}</p>
-      {
-        this.state.number == 4 ? null : <Child />
-      }
-      <button onClick={this.handleClick}>+</button>
+        <p>{this.state.number}</p>
+        {this.state.number === 4 ? null : <ChildCounter count={this.state.number} />}
+        <button onClick={this.handleClick}>+</button>
       </div>
     )
   }
+}
+class ChildCounter extends React.Component {
+  componentWillUnmount() {
+    console.log(' ChildCounter 5.componentWillUnmount')
+  }
+  componentWillMount() {
+    console.log('ChildCounter 1.componentWillMount')
+  }
+  render() {
+    console.log('ChildCounter 2.render')
+    return (<div>
+      {this.props.count}
+    </div>)
+  }
   componentDidMount() {
-    console.log('2.componentDidMount')
+    console.log('ChildCounter 3.componentDidMount')
   }
-  shouldComponentUpdate(perS,nextS){
-    console.log('shouldComponentUpdate-----')
-    return nextS.number%2 === 0
+  componentWillReceiveProps(newProps) { // 第一次不会执行，之后属性更新时才会执行
+    console.log('ChildCounter 4.componentWillReceiveProps')
   }
-  componentWillUpdate(){
-    console.log('----componentWillUpdate')
-  }
-  componentDidUpdate(){
-    console.log('componentDidUpdate')
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextProps.n % 3 === 0; //子组件判断接收的属性 是否满足更新条件 为true则更新
   }
 }
-class Child extends React.Component{
-  constructor(){
-    super()
-  }
-  render(){
-    return(
-      <div>Child</div>
-    )
-  }
-}
-ReactDOM.render(
-  <Welcome />,
-  document.getElementById('root')
-);
+ReactDOM.render(<Counter />, document.getElementById('root'));

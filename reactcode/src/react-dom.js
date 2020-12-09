@@ -43,6 +43,8 @@ export function createDOM(vdom){
     if(ref){
         ref.current = dom
     }
+    //虚拟dom 跟真实dom关联 以便后面做dom-diff时取值
+    vdom.dom = dom;
     return dom;
 }
 function reconcileChildren(childVdom,parentDom){
@@ -90,7 +92,61 @@ function mountFunctionComponent(vdom){
 }
 
 export function compareTwoVdom(parentDOM,oldVdom,newVdom){
-    console.log(parentDOM,oldVdom,newVdom)
+    
+    if(!oldVdom&&!newVdom){
+        console.log(1)
+        return null
+    }else if(oldVdom && !newVdom){
+       let currentDom = oldVdom.dom;
+        currentDom.parentNode.removeChild(currentDom);
+        if(oldVdom.classInstance&&oldVdom.classInstance.componentWillUnmount){
+            oldVdom.classInstance.componentWillUnmount()
+        }
+        return null;
+    }else if(!oldVdom&&newVdom){
+        console.log(2)
+        let newDom = createDOM(newVdom);
+        parentDOM.appendChild(newDom)
+        newVdom.dom = newDom
+        return newVdom
+    }else{
+        console.log(3)
+        updateElement(oldVdom,newVdom)
+        // console.log('``````',newVdom)
+        return newVdom;
+    }
+}
+function updateElement(oldVdom,newVdom){
+    //复用老的DOM节点，没发生改变的直接复用
+    if(typeof oldVdom.type === 'string'){
+        let currentDOM = newVdom.dom = oldVdom.dom;
+        updateProps(currentDOM, oldVdom.props, newVdom.props);
+        updateChildren(currentDOM, oldVdom.props.children, newVdom.props.children)
+    } else if (typeof oldVdom.type === 'function'){
+        newVdom.classInstance = oldVdom.classInstance;
+        updateClassInstance(oldVdom,newVdom)
+    }
+    
+}
+function updateChildren(parentDOM,oldVChildren,newVChildren){
+    if ((typeof oldVChildren === 'string' || typeof oldVChildren === 'number') 
+    && (typeof newVChildren === 'number' || typeof newVChildren === 'string')){
+        if (oldVChildren !== newVChildren){
+            parentDOM.textContent = newVChildren
+            return
+        }
+    }
+    let maxlength = Math.max(oldVChildren.length,newVChildren.length);
+    for(let i=0;i<maxlength;i++){
+        compareTwoVdom(parentDOM, oldVChildren[i], newVChildren[i])
+    }
+}
+function updateClassInstance(oldVdom, newVdom){
+    let classInstance = oldVdom.classInstance;
+    if(classInstance.componentWillReceiveProps){
+        classInstance.componentWillReceiveProps()
+    }
+    classInstance.updater.emitUpdate(newVdom.props)
 }
 let ReactDOM = {render}
 export default ReactDOM;
