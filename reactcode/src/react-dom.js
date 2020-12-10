@@ -175,6 +175,7 @@ function updateFunctionComponent(oldVdom, newVdom){
     let parentDOM = oldVdom.renderVdom.dom.parentNode
     let { type, props } = newVdom;
     let newRenderVdom = type(props);
+    newVdom.renderVdom = newRenderVdom
     compareTwoVdom(parentDOM,oldVdom.renderVdom,newRenderVdom)
 }
 function updateClassInstance(oldVdom, newVdom) {
