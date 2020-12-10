@@ -24,27 +24,9 @@ function createRef(){ //ref返回的就是一个空对象  在创建真实dom时
         current:null
     }
 }
-/**
- * children 子组件产生的 虚拟DOM { props,dom,classInstance,ref,type}
- */
-function createContext(){
-    function Provider({value,children}){
-        Provider.value = value;
-        return children
-    }
-    function Consumer({ children }) { //Consumer他的孩子是一个函数，在这让孩子这个函数执行，并且把  Provider.value传递给他，这样就能一层一层的向下传递
-
-        return children(Provider.value)
-    }
-    return{
-        Provider,
-        Consumer
-    }
-}
 let React = {
     createElement,
     Component,
-    createRef,
-    createContext
+    createRef
 }
 export default React

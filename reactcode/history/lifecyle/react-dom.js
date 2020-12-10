@@ -92,7 +92,6 @@ function mountClassComponent(vdom) {
 function mountFunctionComponent(vdom) {
     let { type, props } = vdom;
     let renderVdom = type(props)
-    vdom.renderVdom = renderVdom;
     // console.log(renderVdom)  //将函数组件解析成{type:"h1",props:{children:[]}}
     return createDOM(renderVdom)
 }
@@ -136,21 +135,15 @@ export function compareTwoVdom(parentDOM, oldVdom, newVdom,nextDOM) {
 }
 function updateElement(oldVdom, newVdom) {
     //复用老的DOM节点，没发生改变的直接复用
-    
+    let currentDOM = newVdom.dom = oldVdom.dom;
+    newVdom.classInstance = oldVdom.classInstance;
     if (typeof oldVdom.type === 'string') {
-        let currentDOM = newVdom.dom = oldVdom.dom;
         
         updateProps(currentDOM, oldVdom.props, newVdom.props);
         updateChildren(currentDOM, oldVdom.props.children, newVdom.props.children)
     } else if (typeof oldVdom.type === 'function') {
-        if ( oldVdom.type.isReactComponent){
-            newVdom.dom = oldVdom.dom;
-            newVdom.classInstance = oldVdom.classInstance;
-            updateClassInstance(oldVdom, newVdom)
-        }else{
-            updateFunctionComponent(oldVdom, newVdom)
-        }
         
+        updateClassInstance(oldVdom, newVdom)
     }
 
 }
@@ -170,12 +163,6 @@ function updateChildren(parentDOM, oldVChildren, newVChildren) {
         let nextDOM = oldVChildren.find((item,index)=>index>i&&item&&item.dom)
         compareTwoVdom(parentDOM, oldVChildren[i], newVChildren[i],nextDOM&&nextDOM.dom)
     }
-}
-function updateFunctionComponent(oldVdom, newVdom){
-    let parentDOM = oldVdom.renderVdom.dom.parentNode
-    let { type, props } = newVdom;
-    let newRenderVdom = type(props);
-    compareTwoVdom(parentDOM,oldVdom.renderVdom,newRenderVdom)
 }
 function updateClassInstance(oldVdom, newVdom) {
     let classInstance = oldVdom.classInstance;
