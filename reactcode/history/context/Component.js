@@ -87,13 +87,13 @@ class Component {
     }
     // const renderVdom = this.render(); //调用类组件中的render方法  获取最新的虚拟dom
     // updateClassComponent(this, renderVdom)
-    let newRenderVdom = this.render();
+    let newVdom = this.render();
     let getSnapshot = this.getSnapshotBeforeUpdate && this.getSnapshotBeforeUpdate() //生命周期函数被
     //调用于render之后，创建真实DOM之前，并且把返回值传给componentDidUpdate
     //
     //this.oldVdom.dom.parentNode => #root
-    let currentRenderVdom = compareTwoVdom(this.oldVdom.dom.parentNode, this.oldVdom, newRenderVdom);
-    let oldRenderVdom = currentRenderVdom
+    let currentVdom = compareTwoVdom(this.oldVdom.dom.parentNode, this.oldVdom, newVdom);
+    let oldVdom = currentVdom
     if (this.componentDidUpdate) { //生命周期函数，在创建真实dom并且挂载到页面之后调用
       this.componentDidUpdate(this.props, this.state, getSnapshot);
     }

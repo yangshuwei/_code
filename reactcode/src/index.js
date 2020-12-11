@@ -1,40 +1,24 @@
-import React from './react';
-import ReactDOM from './react-dom';
-let ThemeContext = React.createContext()
-class Page extends React.Component{
-  constructor(props){
-    super(props)
-    this.state = { color: 'red' };
-  }
-  changeColor = (color)=>{
-    this.setState({color:color})
-  }
-  render(){
-    let contextVal = { color: this.state.color, changeColor:this.changeColor}
-    return(
-      <ThemeContext.Provider value={contextVal}>
-        <Content />
-      </ThemeContext.Provider>
-    )
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+function parent(OldCom) {
+  return class NewCom extends React.Component {
+    constructor(props) {
+      super()
+      this.state = { name: 'hello' }
+    }
+    render() {
+      return (
+        <div>
+          <OldCom {...this.state} />
+        </div>
+      )
+    }
   }
 }
-class Content extends React.Component{
-  constructor(props){
-    super(props)
-  }
-  render(){
-    return(
-      <ThemeContext.Consumer>
-        {
-          (value) =>(
-            <div style={{color:value.color}}>
-              content
-              <button onClick={()=>{value.changeColor('green')}}></button>
-            </div>
-          )
-        }
-      </ThemeContext.Consumer>
-    )
-  }
+
+const Word = (props) => {
+  return <div>{props.name},word</div>
 }
-ReactDOM.render(<Page />, document.getElementById('root'));
+const Ele = parent(Word)
+ReactDOM.render(<Ele />, document.getElementById('root'))
