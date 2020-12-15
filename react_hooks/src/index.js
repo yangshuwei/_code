@@ -1,102 +1,54 @@
-import React,{memo} from 'react';
+import React, { } from 'react';
 import ReactDOM from 'react-dom';
-// let lastState;
-// function useState1(initState){
-//   lastState = lastState || initState;
-//   function setState(newState){
-//     if(typeof newState === 'function'){
-//       newState = newState(lastState)
-//     }
-//     lastState = newState;
-//     render()
-//   }
-//   return[lastState,setState]
-// }
 
 let hookStates = [];
 let hookIndex = 0
-function useState(initState){
-  hookStates[hookIndex] = hookStates[hookIndex] || initState;
+function useReducer(reducer, initState, init) {
+  hookStates[hookIndex] = hookStates[hookIndex] || (init ? init(initState) : initState);
   let currentIndex = hookIndex;
-  function setState(newState){
-    hookStates[currentIndex] = newState;
-    render();
+  function dispatch(action) {
+    console.log(action)
+    hookStates[currentIndex] = reducer ? reducer(hookStates[currentIndex], action) : action
+    render()
   }
-  
-  return [hookStates[hookIndex++],setState]
+  return [hookStates[hookIndex++], dispatch]
 }
+function reducer(state, action) {
+  console.log('----',state,action)
+  switch (action.type) {
+    case 'ADD':
+      return { number: state.number + 1 }
 
-function useMemo(factory,deps){
-  console.log(hookStates,hookIndex)
-  if(hookStates[hookIndex]){
-    let [laseMemo,lastDeps] = hookStates[hookIndex];
-    let same = deps.every((item,index)=>item === lastDeps[index])
-    if(same){
-      hookIndex ++
-      return laseMemo;
-    }else{
-      let newMemo = factory();
-      hookStates[hookIndex++] = [newMemo,deps]
-      return newMemo
-    }
-  }else{
-    let newMemo = factory();
-    hookStates[hookIndex++] = [newMemo,deps]
-    return newMemo
+    default:
+      return state
   }
 }
-function useCallback(callback,deps){
-  if(hookStates[hookIndex]){
-    let [lastCallback,lastDeps] = hookStates[hookIndex];
-    let same = deps.every((item,index)=>item === lastDeps[index]);
-    if(same){
-      hookIndex++;
-      return lastCallback;
-    }else{
-      hookStates[hookIndex++]=[callback,deps];
-      return callback;
-    }
-  }else{//如果取不到，说明第一次调用
-    hookStates[hookIndex++]=[callback,deps];
-    return callback;
-  }
-}
-let currentRef;
-function useRef(){
-  currentRef = currentRef || {current:undefined}
-  return currentRef
+let initState = 0;
+function init(initState) {
+  return { number: initState }
 }
 
-
-Child = memo(Child)
-const Counter = (props) =>{
-  debugger
-  let [name,setName] = useState('ysw');
-  let [number,setNumber] = useState(0);
-  const handleClick = useCallback(()=>setNumber(number+1),[number])
-  let data = useMemo(()=>({number}),[number])
+function useState(initState) {
+  return useReducer(null, initState)
+}
+function Counter() {
+  let [state, dispatch] = useReducer(reducer, initState, init)
+  let [count, setCount] = useState(0)
+  console.log(useReducer(reducer, initState, init))
   return (
     <div>
-      <div>
-      <input type="text" value={name} onChange={event=>setName(event.target.value)}/>
-        <Child data={data}  handleClick={handleClick}/>
-      </div>
-      {/* <button onClick={()=>{setNumber(x=>x+1);numberRef.current=number+1}}>+</button> */}
-      {/* <button onClick={handlerRef}>ref</button> */}
+      <p>number:{state.number}</p>
+      <button onClick={() => dispatch({ type: "ADD" })}>number+</button>
+      <p>count:{count}</p>
+      <button onClick={() => setCount(count + 1)}>count+</button>
     </div>
   )
 }
-function Child(props){
-  console.log('Child');
-  return (
-    <div>
-      <button onClick={props.handleClick}>{props.data.number}</button>
-    </div>
-  )
-}
+
 render()
-hookIndex=0;
-function render(){
+
+function render() {
+  hookIndex = 0;
   ReactDOM.render(
     <Counter />,
     document.getElementById('root')
