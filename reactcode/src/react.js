@@ -1,16 +1,16 @@
 import Component from './Component'
-function createElement(type,config,children){
+function createElement(type, config, children) {
     // console.log(config)
     let ref;
-    if(config){
+    if (config) {
         delete config._owner;
         delete config._store;
         ref = config.ref
         delete config.ref;
     }
-    let props = {...config};
-    if(arguments.length>3){
-        children = Array.prototype.splice.call(arguments,2)
+    let props = { ...config };
+    if (arguments.length > 3) {
+        children = Array.prototype.splice.call(arguments, 2)
     }
     props.children = children;
     return {
@@ -19,9 +19,9 @@ function createElement(type,config,children){
         ref
     }
 }
-function cloneElement(element,props,children){
-    if(arguments.length>3){
-        children = Array.prototype.splice.call(arguments,2)
+function cloneElement(element, props, children) {
+    if (arguments.length > 3) {
+        children = Array.prototype.splice.call(arguments, 2)
     }
     props.children = children;
     return {
@@ -29,27 +29,27 @@ function cloneElement(element,props,children){
         props
     }
 }
-function createRef(){ //ref返回的就是一个空对象  在创建真实dom时候，把真实dom元素 赋值给 current ，并且ref跟props是同级的
+function createRef() { //ref返回的就是一个空对象  在创建真实dom时候，把真实dom元素 赋值给 current ，并且ref跟props是同级的
     return {
-        current:null
+        current: null
     }
 }
 /**
  * children 子组件产生的 虚拟DOM { props,dom,classInstance,ref,type}
  */
-function createContext(){
-    function Provider({value,children}){
-        Provider.value = value;
+function createContext() {
+    let context = { _currentValue: null }
+    function Provider({ value, children }) {
+        context._currentValue = value;
         return children
     }
     function Consumer({ children }) { //Consumer他的孩子是一个函数，在这让孩子这个函数执行，并且把  Provider.value传递给他，这样就能一层一层的向下传递
 
-        return children(Provider.value)
+        return children(context._currentValue)
     }
-    return{
-        Provider,
-        Consumer
-    }
+    context.Provider = Provider
+    context.Consumer = Consumer;
+    return context
 }
 let React = {
     createElement,
