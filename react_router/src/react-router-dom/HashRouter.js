@@ -1,8 +1,8 @@
 import React from 'react';
-import Router from '../react-router';
-import {createBrowserHistory} from 'history';
+import Router from '../react-router/Router';
+import { createHashHistory} from '../history';
 class HashRouter extends React.Component{
-    history =createBrowserHistory()
+    history = createHashHistory()
     render(){
         return(
             <Router history={this.history}>
