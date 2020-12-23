@@ -14,6 +14,7 @@ class Router extends React.Component{
     }
     //监听url地址变化
     this.unlisten = props.history.listen((newlocation)=>{
+      console.log(newlocation)
       this.setState({
         location:newlocation
       })

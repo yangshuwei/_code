@@ -31,7 +31,12 @@ function createHashRouter() {
   })
   function push(pathname, nextState) {
     action = 'PUSH';
-    state = nextState;
+    if (typeof pathname === 'object') {
+      state = pathname.state;
+      pathname = pathname.pathname;
+    } else {
+      state = nextState;
+    }
     window.location.hash = pathname
   }
   const history = {
