@@ -1,11 +1,11 @@
 function createHashRouter() {
   let stack = [];
   let index = -1;
-  let action,state;
+  let action, state;
   let listeners = [];
   function go(n) {
     action = 'POP';
-    index+=n;
+    index += n;
     let nextLocation = stack[index];
     window.location.hash = nextLocation.pathname
   }
@@ -21,13 +21,13 @@ function createHashRouter() {
       listeners = listeners.filter(l => l !== listener) //从数组中删除已经监听过的事件函数
     }
   }
-  window.addEventListener('hashchange',()=>{
+  window.addEventListener('hashchange', () => {
     let pathname = window.location.hash.slice(1);
-    Object.assign(history,{action,location:{pathname,state}}) //合并更新原有的history
-    if(action === 'PUSH'){
+    Object.assign(history, { action, location: { pathname, state } }) //合并更新原有的history
+    if (action === 'PUSH') {
       stack[++index] = history.location
     }
-    listeners.forEach(listener=>listener(history.location))
+    listeners.forEach(listener => listener(history.location))
   })
   function push(pathname, nextState) {
     action = 'PUSH';
