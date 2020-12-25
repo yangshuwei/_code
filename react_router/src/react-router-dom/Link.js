@@ -1,6 +1,7 @@
 import React from 'react';
 import { __RouterContext as RouterContext} from '../react-router';
 export default function Link(props){
+  console.log('RouterContext', RouterContext)
   return(
     <RouterContext.Consumer>
       {
