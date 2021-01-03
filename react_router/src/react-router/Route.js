@@ -16,30 +16,36 @@ class Route extends React.Component {
     const { path, component: RouteComponent, computedMatch, render,children } = this.props;
     const match = computedMatch ? computedMatch : matchPath(location.pathname, this.props);
     let routeProps = { history, location }
-    // console.log('match')
+    let element;
     if (match) {
       routeProps.match = match;
       if(children){
-        return children(routeProps)
+        element =  children(routeProps)
       }else if (RouteComponent){
         // return React.createElement(Component,this.props)
-        return <RouteComponent {...routeProps} />
+        element =  <RouteComponent {...routeProps} />
         
       } else if (render){
         console.log('render',render)
-        return render(routeProps)
+        element =  render(routeProps)
       }else{
-        return null;
+        element =  null;
       }
       
     } else {
       if(children){
-        return children(routeProps)
+        element =  children(routeProps)
       }else{
-        return null
+        element =  null
       }
       
     }
+    //嵌套Provider 是更新value 获取最新的value值
+    <RouterContext.Provider value={routeProps}> 
+      {element}
+    </RouterContext.Provider>
+    // console.log('match')
+    
     //     }
     //   }
     // </RouterContext.Consumer>

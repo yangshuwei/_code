@@ -7,6 +7,9 @@ import RouterContext from "./RouterContext";
   就渲染对应的component组件  <Route path="/a" component={A}>
  */
 class Router extends React.Component{
+  static computeRouterMatch(pathname){
+    return {path:'/',url:'',params:{},isExact:pathname==='/'};
+  }
   constructor(props){
     super(props)
     this.state = {
@@ -27,7 +30,7 @@ class Router extends React.Component{
     let value = {
       history:this.props.history,
       location:this.state.location,
-      // match:
+      match:Router.computeRouterMatch(this.state.location.pathname)
     }
     return(
       <RouterContext.Provider value={value}>
