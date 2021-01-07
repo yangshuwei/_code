@@ -2,25 +2,27 @@ import React from 'react';
 import  ReactReduxContext  from './ReactReduxContext';
 import {bindActionCreators} from '../redux'
 function connect(mapStateToProps,mapDispatchToProps){
-  return function(Oldcomponent){
+  return function(OldComponent){
     return class extends React.Component{
       static contextType = ReactReduxContext;
+     
       constructor(props,context){
         super(props)
-        debugger
-        this.state = mapStateToProps(context.store.getState());
+        this.state = mapStateToProps(context.getState());
+        // this.context = context;
       }
       componentDidMount(){
-        this.unsubscribe = this.context.store.subscribe(()=>{
-          this.setState(mapStateToProps(this.context.store.getState()))
+        
+        this.unsubscribe = this.context.subscribe(()=>{
+          this.setState(mapStateToProps(this.context.getState()))
         })
       }
       componentWillUnmount(){
         this.unsubscribe()
       }
       render(){
-        let boundActions = bindActionCreators(mapDispatchToProps,this.context.store.dispatch)
-        return <Oldcomponent {...this.props} {...this.state} {...boundActions}/>
+        let boundActions = bindActionCreators(mapDispatchToProps,this.context.dispatch)
+        return <OldComponent {...this.props} {...this.state} {...boundActions}/>
       }
     }
   }
