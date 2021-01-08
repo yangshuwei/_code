@@ -6,7 +6,7 @@ function Provider(props){
   let {store,children} = props
   
   return (
-    <ReactReduxContext.Provider value={store}>
+    <ReactReduxContext.Provider value={{store}}>
       {children}
     </ReactReduxContext.Provider>
   )
