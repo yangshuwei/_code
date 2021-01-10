@@ -11,7 +11,7 @@ ReactDOM.render(
     <div>
       <Counter1 />
       <hr />
-      {/* <Counter2 /> */}
+      <Counter2 />
     </div>
   </Provider>
   ,
