@@ -1,4 +1,4 @@
-import { updateQueue } from "./Component";
+import { updateQueue } from "./component";
 /**
   合成事件的作用？
   1.自动触发批量更新
