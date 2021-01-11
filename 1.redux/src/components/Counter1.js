@@ -15,7 +15,6 @@ class Counter1 extends React.Component{
   }
 }
 const mapStateToProps = (state) => {
-  console.log(state)
   return state.counter1
 }
 export default connect(

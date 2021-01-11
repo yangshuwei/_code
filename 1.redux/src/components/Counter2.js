@@ -7,6 +7,7 @@ import { useSelector,useDispatch} from '../react-redux';
 
 function Counter2(props){
   let state = useSelector(state=>state.counter2)
+  console.log('Counter2',state)
   let dispatch = useDispatch()
   return(
           <div>
