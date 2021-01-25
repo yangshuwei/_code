@@ -1,0 +1,108 @@
+$headSize:60px;
+$menuSize:275px; //菜单列表宽度
+$operatorSize:275px; //编辑详情宽度
+
+$ibc:#dcdfe6;
+$ibl:#ebeef5;
+$itc:#314659;
+$icc:rgba(0, 0, 0, 0.45);
+$boxShadowColor:#f0f1f2;
+
+$primary:#409eff;
+
+.visual-editor {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  top: 20px;
+  right: 20px;
+  background: #fff;
+
+  &:before {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    background: rgba($color: #000000, $alpha: 0.1);
+    content: '';
+  }
+
+  &>.visual-editor-menu {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: $menuSize;
+    background: #fff;
+    z-index: 9;
+
+    .visual-editor-menu-item {
+      position: relative;
+      width: calc(100%-20px);
+      margin-left: 10px;
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 80px;
+      border: 1px solid $ibl;
+      box-sizing: border-box;
+      padding: 0 20px;
+      .visual-editor-menu-item-label{
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-size: 12px;
+        background: $primary;
+        padding: 4px 8px;
+        color: #fff;
+      }
+    }
+  }
+
+  &>.visual-editor-head {
+    position: absolute;
+    top: 0;
+    left: $menuSize;
+    right: $operatorSize;
+    height: $headSize;
+  }
+
+  &>.visual-editor-operator {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: $operatorSize;
+    background: #fff;
+  }
+
+  &>.visual-editor-body {
+    padding-top: $headSize;
+    padding-left: $menuSize;
+    padding-right: $operatorSize;
+    box-sizing: border-box;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+
+    &>.visual-editor-content {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+
+      &>.visual-editor-container {
+        background: #fff;
+        flex-shrink: 0;
+        flex-grow: 0;
+        position: relative;
+
+        .visual-editor-block {
+          position: absolute;
+        }
+      }
+    }
+
+  }
+}
