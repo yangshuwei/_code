@@ -41,13 +41,27 @@ $primary:#409eff;
       position: relative;
       width: calc(100%-20px);
       margin-left: 10px;
+      margin-right: 10px;
       margin-top: 20px;
       display: flex;
       justify-content: center;
       min-height: 80px;
       border: 1px solid $ibl;
       box-sizing: border-box;
-      padding: 0 20px;
+      padding: 30px 20px;
+      &:after{
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        content: '';
+        z-index: 2;
+      }
+      &:hover{
+        border-color: $primary;
+        cursor: move;
+      }
       .visual-editor-menu-item-label{
         position: absolute;
         left: 0;
@@ -100,6 +114,20 @@ $primary:#409eff;
 
         .visual-editor-block {
           position: absolute;
+          &:after{
+            position: absolute;
+            left: -3px;
+            top: -3px;
+            right: -3px;
+            bottom: -3px;
+            content: '';
+          }
+          &.visual-editor-block-focus{
+            &::after{
+              border: 1px dashed $primary;
+            }
+            
+          }
         }
       }
     }

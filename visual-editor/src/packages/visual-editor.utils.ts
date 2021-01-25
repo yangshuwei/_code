@@ -2,8 +2,11 @@
 import { VisualEditor } from './visual-editor';
 
 export interface VisualEditorBlockData {
+  componentKey:string,
   top: number,
-  left: number
+  left: number,
+  adjustPosition:boolean,
+  focus:boolean
 }
 
 
@@ -20,7 +23,23 @@ export interface VisualEditorComponent { //自定义组件类型
   preview: () => JSX.Element;
   render: () => JSX.Element;
 }
-
+export function createNewBlock({
+  component,
+  left,
+  top
+}:{
+  component:VisualEditorComponent,
+  left:number,
+  top:number
+}):VisualEditorBlockData{
+  return {
+    top,
+    left,
+    componentKey:component!.key,
+    adjustPosition:true,
+    focus:false
+  }
+}
 export function createVisualEditorConfig() {
   const componentList: VisualEditorComponent[] = []; //将自定义的组件保存起来
   const componentMap: Record<string, VisualEditorComponent> = {}; //通过map映射表  通过name来查找对应组件

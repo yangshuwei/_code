@@ -23,6 +23,7 @@ module.exports = {
     'no-unused-vars':'off',
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/ban-ts-ignore': 'off',
-    'prefer-const':'off'
+    'prefer-const':'off',
+    '@typescript-eslint/type-annotation-spacing':'off'
   }
 }
