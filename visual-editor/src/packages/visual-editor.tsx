@@ -1,4 +1,5 @@
 import { ref,computed, defineComponent, PropType, withCtx } from 'vue';
+import { createEvent } from './plugins/event';
 import { useModel } from './utils/useModule';
 import { useVisualCommand } from './utils/visual.command';
 import { VisualEditorBlock } from './visual-editor-block';
@@ -32,7 +33,14 @@ export const VisualEditor = defineComponent({
         unFocus
       }
     })
+    const dragstart = createEvent();
+    const dragend = createEvent();
+    dragstart.on(()=>{
 
+    });
+    dragend.on(()=>{
+      
+    });
     const methods = {
       //清除选中状态
       clearFocus:(block?:VisualEditorBlockData)=>{
@@ -59,6 +67,7 @@ export const VisualEditor = defineComponent({
           containerRef.value.addEventListener('dragleave',containerHandler.dragleave);
           containerRef.value.addEventListener('drop',containerHandler.drop);
           component = current; 
+          dragstart.emit()
         },
         dragend:(e:DragEvent)=>{
           containerRef.value.removeEventListener('dragenter',containerHandler.dragenter);
@@ -66,6 +75,7 @@ export const VisualEditor = defineComponent({
           containerRef.value.removeEventListener('dragleave',containerHandler.dragleave);
           containerRef.value.removeEventListener('drop',containerHandler.drop);
           component = null; 
+          // dragend()
         },
       }
       const containerHandler = { //容器内可放置拖进来的组件
@@ -83,6 +93,7 @@ export const VisualEditor = defineComponent({
           const blocks = [...dataModel.value.blocks || []];
           blocks.push(createNewBlock({component:component!,top:e.offsetY,left:e.offsetX}))  //创建容器中已放置的组件
           methods.updateBlocks(blocks)
+          dragend.emit()
           // dataModel.value = {...dataModel.value,blocks}
         }
       }
@@ -154,7 +165,9 @@ export const VisualEditor = defineComponent({
     const commander = useVisualCommand({
         focusData,
         updateBlocks:methods.updateBlocks,
-        dataModel
+        dataModel,
+        dragstart,
+        dragend
       });
     const buttons = [
       {label:'撤销',icon:'icon-back',handler:commander.undo,tip:'ctrl+z'},
@@ -179,7 +192,7 @@ export const VisualEditor = defineComponent({
           {
             buttons.map((btn,index)=>
               (<div key={index} class="visual-editor-head-button" onClick={btn.handler}>
-              <i class={`iocnfont ${btn.icon}`}></i>
+              <i class={`iconfont ${btn.icon}`}></i>
               <span>{btn.label}</span>
             </div>)
             )

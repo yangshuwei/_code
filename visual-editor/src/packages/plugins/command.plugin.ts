@@ -9,22 +9,29 @@ export interface Command {
   keyboard?: string | string[], //命令快捷键
   execute: (...args: any[]) => CommandExecute, //执行命令函数
   followQueue?: boolean,//执行完毕后是否将undo，redo存到队列
+  init?:()=>((()=>void)|undefined),
+  data?:any
 }
 
 export function useCommander() {
   let state = reactive({
-    current: -1,
-    queue: [] as CommandExecute[],
-    commands: {} as Record<string, (...args: any[]) => void>, //key是字符串，值是Command对象
+    current: -1, //队列中当前命令
+    queue: [] as CommandExecute[],//命令队列
+    commandArray:[] as Command[], //，命令对象数组
+    commands: {} as Record<string, (...args: any[]) => void>, //key是字符串，值是Command对象，命令对象通过命令名称调用恶心cute函数
+    destroyList: [] as ((()=>void) |undefined)[],//组件销毁数组
   })
   const registry = (command: Command) => {
+    state.commandArray.push(command);
     state.commands[command.name] = (...args) => {
       const { undo, redo,} = command.execute(...args);
       redo()
+
+      //命令执行后，直接返回。不需要进入命令队列
       if(command.followQueue==false){
         return
       }
-      
+     //去除命令队列中剩余，保留当前命令 
       let {queue,current} = state;
       if(queue.length>0){
         queue = queue.slice(0,current+1);
@@ -35,6 +42,17 @@ export function useCommander() {
     }
 
   }
+  const init = ()=>{
+    const onKeydown = (e:KeyboardEvent)=>{
+
+    }
+    window.addEventListener('keydown',onKeydown);
+
+    state.commandArray.forEach(command=>!!command.init && state.destroyList.push(command.init()))
+    state.destroyList.push(()=>window.removeEventListener('keydown',onKeydown))
+  }
+
+  const destroy = () =>{}
   registry({
     name: 'undo',
     keyboard: 'ctrl+z',
@@ -86,7 +104,8 @@ export function useCommander() {
   })
   return {
     state,
-    registry
+    registry,
+    init
   }
 }
 
