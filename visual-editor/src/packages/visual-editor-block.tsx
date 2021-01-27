@@ -24,6 +24,8 @@ export const VisualEditorBlock = defineComponent({
         const {offsetHeight,offsetWidth} = el.value;
         block.left = block.left - offsetWidth/2;
         block.top = block.top - offsetHeight/2;
+        block.height = offsetHeight
+        block.width=offsetWidth
       }
     })
     return ()=>{

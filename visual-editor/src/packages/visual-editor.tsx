@@ -5,7 +5,7 @@ import { useModel } from './utils/useModule';
 import { useVisualCommand } from './utils/visual.command';
 import { VisualEditorBlock } from './visual-editor-block';
 import './visual-editor.scss';
-import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEditorConfig, VisualEditorModelValue } from './visual-editor.utils';
+import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEditorConfig, VisualEditorMarkLines, VisualEditorModelValue } from './visual-editor.utils';
 export const VisualEditor = defineComponent({
   props: {
     modelValue: { type: Object as PropType<VisualEditorModelValue>, required: true },
@@ -139,45 +139,96 @@ export const VisualEditor = defineComponent({
 
 
     const blcokDraggier = (()=>{  //容器内已选取组件拖拽 位置调整
+      const mark = reactive({
+        x:null as null | number,
+        y:null as null | number
+      })
       let dragState={
         startX:0,
         startY:0,
+        startLeft:0,
+        startTop:0,
         startPos:[] as {left:number,top:number}[],
         dragging:false,
-        marks:[] as {
-          x:{left:number,showLeft:number},
-          y:{top:number,showTop:number}
-        }[]
+        markLines:{} as VisualEditorMarkLines
       }
       const mousedown = (e:MouseEvent)=>{
         dragState = {
           startX:e.clientX,
           startY:e.clientY,
+          startLeft:state.selectBlock!.left,
+          startTop:state.selectBlock!.top,
           startPos:focusData.value.focus.map(({top,left})=>({top,left})),
           dragging:false,
-          marks:(()=>{
+          markLines:(()=>{
             const {focus ,unFocus} = focusData.value;
-            const {top,left} = state.selectBlock;
-            return
+            const {top,left,width,height} = state.selectBlock!;
+            let lines:VisualEditorMarkLines = {x:[],y:[]} as VisualEditorMarkLines;
+            unFocus.forEach(block=>{
+              const {top:t,left:l,width:w,height:h} =block
+              lines.y.push({top:t,showTop:t}) //顶部对顶部
+              lines.y.push({top:t+h,showTop:t+h}) //顶部对底部
+              lines.y.push({top:t+h/2-height/2,showTop:t+h/2}) //中间对中间
+              lines.y.push({top:t-height,showTop:t}) //底部对顶部
+              lines.y.push({top:t+h -height,showTop:t+h}) //底部对底部
+              
+
+              lines.x.push({left:l,showLeft:l}) //顶部对顶部
+              lines.x.push({left:l+w,showLeft:l+w}) //顶部对底部
+              lines.x.push({left:l+w/2-width/2,showLeft:l+w/2}) //中间对中间
+              lines.x.push({left:l-width,showLeft:l}) //底部对顶部
+              lines.x.push({left:l+w -width,showLeft:l+w}) //底部对底部
+            })
+            return lines
           })()
         }
         document.addEventListener('mousemove',mousemove);
         document.addEventListener('mouseup', mouseup);
       }
       const mousemove = (e:MouseEvent) => {
-        let durX = e.clientX - dragState.startX;
-        let durY = e.clientY - dragState.startY;
+        
         if(!dragState.dragging){
           dragState.dragging = true;
           dragstart.emit()
         }
+        let {clientX:moveX,clientY:moveY} = e;
+        const {startX,startY} = dragState;
+        // let durX = e.clientX - dragState.startX;
+        // let durY = e.clientY - dragState.startY;
         if(e.shiftKey){
-          if(Math.abs(durX)> Math.abs(durY)){
-            durY = 0
+          if(Math.abs(moveX-startX)> Math.abs(moveY-startY)){
+            moveX = startX
           }else{
-            durX = 0
+            moveY = startY
           }
         }
+        const currentLeft = dragState.startLeft + moveX - startX;
+        const currentTop = dragState.startTop +moveY - startY;
+        const currentMark = {
+          x:null as null | number,
+          y:null as null |number
+        }
+        for(let i=0;i<dragState.markLines.y.length;i++){
+          const {top,showTop} = dragState.markLines.y[i];
+          if(Math.abs(top-currentTop)<5){
+            moveY = top + startY -dragState.startTop;
+            currentMark.y=showTop;
+            break;
+          }
+        }
+        
+        for(let i=0;i<dragState.markLines.x.length;i++){
+          const {left,showLeft} = dragState.markLines.x[i];
+          if(Math.abs(left-currentLeft)<5){
+            moveX = left + startX -dragState.startLeft;
+            currentMark.x=showLeft;
+            break;
+          }
+        }
+        mark.x = currentMark.x;
+        mark.y = currentMark.y;
+        const durX = moveX - startX;
+        const durY = moveY - startY;
         focusData.value.focus.forEach((block,index)=>{
           block.top = dragState.startPos[index].top + durY;
           block.left = dragState.startPos[index].left +durX;
@@ -187,7 +238,7 @@ export const VisualEditor = defineComponent({
         document.removeEventListener('mousemove', mousemove);
         document.removeEventListener('mouseup', mouseup);
       }
-      return {mousedown};
+      return {mark,mousedown};
     })()
     const commander = useVisualCommand({
         focusData,
@@ -254,6 +305,17 @@ export const VisualEditor = defineComponent({
                   }}/>
                 ))
               )}
+              {
+                blcokDraggier.mark.y!==null && (
+                  <div class="visual-editor-mark-line-y" style={{top:`${blcokDraggier.mark.y}px`}} />
+                )
+              }
+              {
+                blcokDraggier.mark.x!==null && (
+                  <div class="visual-editor-mark-line-x" style={{left:`${blcokDraggier.mark.x}px`}} />
+                )
+              }
+              
             </div>
 
           </div>

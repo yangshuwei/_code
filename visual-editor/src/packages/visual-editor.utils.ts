@@ -27,6 +27,10 @@ export interface VisualEditorComponent { //自定义组件类型
   preview: () => JSX.Element;
   render: () => JSX.Element;
 }
+export interface VisualEditorMarkLines{
+  x:{left:number,showLeft:number}[],
+  y:{top:number,showTop:number}[]
+}
 export function createNewBlock({
   component,
   left,
