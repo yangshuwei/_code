@@ -24,6 +24,7 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/ban-ts-ignore': 'off',
     'prefer-const':'off',
-    '@typescript-eslint/type-annotation-spacing':'off'
+    '@typescript-eslint/type-annotation-spacing':'off',
+    '@typescript-eslint/no-empty-function':'off'
   }
 }

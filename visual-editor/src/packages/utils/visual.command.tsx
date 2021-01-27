@@ -35,14 +35,14 @@ export function useVisualCommand(
       return {
         redo: () => {
           console.log('重做删除命令');
-          updateBlocks(data.after)
+          updateBlocks(deepcopy(data.after))
         },
         undo: () => {
 
           console.log('撤回删除命令');
           // data.before = dataModel.value.blocks || []
           // const {focus,unFocus} = focusData.value;
-          updateBlocks(data.before);
+          updateBlocks(deepcopy(data.before));
           // data.after = unFocus;
 
         },
@@ -55,11 +55,11 @@ export function useVisualCommand(
     init(){
        this.data = {
         before: null as null | VisualEditorBlockData[],
-        after: null as null | VisualEditorBlockData[],
+        // after: null as null | VisualEditorBlockData[],
       }
       const handler = {
         dragstart:()=>this.data.before = deepcopy(dataModel.value.blocks||[]),
-        dragend:()=>this.data.after = commander.state.commands.drag()
+        dragend:()=>  commander.state.commands.drag()
         
       }
       dragstart.on(handler.dragstart)
@@ -83,10 +83,85 @@ export function useVisualCommand(
       }
     }
   })
+  commander.registry({
+    name:'clear',
+    execute:()=>{
+      let data = {
+        before: deepcopy(dataModel.value.blocks),
+        after:deepcopy([])
+      }
+      return {
+        redo:()=>{
+          updateBlocks(deepcopy(data.after))
+        },
+        undo:()=>{
+          updateBlocks(deepcopy(data.before||[]))
+        }
+      }
+    }
+  })
+  commander.registry({
+    name:'placeTop',
+    keyboard:'ctrl+up',
+    execute:()=>{
+      let data = {
+        before:deepcopy(dataModel.value.blocks),
+        after:deepcopy((()=>{
+          const {focus,unFocus} = focusData.value;
+          const maxZIndex = unFocus.reduce((prev,block)=>{
+            return Math.max(prev,block.zIndex)
+          },0) +1;
+          focus.forEach(block=>block.zIndex=maxZIndex)
+          return deepcopy(dataModel.value.blocks)
+        })())
+      }
+      return{
+        redo:()=>{
+          updateBlocks(deepcopy(data.after))
+        },
+        undo:()=>{
+          updateBlocks(deepcopy(data.before))
+        }
+      }
+    }
+  })
+  commander.registry({
+    name: 'placeBottom',
+    keyboard: 'ctrl+down',
+    execute: () => {
+      let data = {
+        before: deepcopy(dataModel.value.blocks),
+        after: deepcopy((() => {
+          const { focus, unFocus } = focusData.value;
+          let minZIndex = unFocus.reduce((prev, block) => {
+            return Math.min(prev, block.zIndex)
+          }, Infinity) -1;
+          if(minZIndex<0){
+            const dur = Math.abs(minZIndex)
+            unFocus.forEach(block=>block.zIndex+=dur)
+            minZIndex=0
+          }
+          focus.forEach(block => block.zIndex = minZIndex)
+          return deepcopy(dataModel.value.blocks)
+        })())
+      }
+      return {
+        redo: () => {
+          updateBlocks(deepcopy(data.after))
+        },
+        undo: () => {
+          updateBlocks(deepcopy(data.before))
+        }
+      }
+    }
+  })
   commander.init()
   return {
     undo: () => commander.state.commands.undo(),
     redo: () => commander.state.commands.redo(),
-    delete: () => commander.state.commands.delete()
+    delete: () => commander.state.commands.delete(),
+    clear:()=> commander.state.commands.clear(),
+    placeTop: () => commander.state.commands.placeTop(),
+    placeBottom: () => commander.state.commands.placeBottom()
   }
 }

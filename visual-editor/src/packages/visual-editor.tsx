@@ -1,5 +1,6 @@
-import { ref,computed, defineComponent, PropType, withCtx } from 'vue';
+import { ref,computed, defineComponent, PropType, withCtx, reactive } from 'vue';
 import { createEvent } from './plugins/event';
+import { $$dialog } from './utils/dialog-service';
 import { useModel } from './utils/useModule';
 import { useVisualCommand } from './utils/visual.command';
 import { VisualEditorBlock } from './visual-editor-block';
@@ -35,12 +36,9 @@ export const VisualEditor = defineComponent({
     })
     const dragstart = createEvent();
     const dragend = createEvent();
-    dragstart.on(()=>{
-
-    });
-    dragend.on(()=>{
-      
-    });
+    const state = reactive({
+      selectBlock:null as null | VisualEditorBlockData, //容器内当前选中的组件
+    })
     const methods = {
       //清除选中状态
       clearFocus:(block?:VisualEditorBlockData)=>{
@@ -105,9 +103,15 @@ export const VisualEditor = defineComponent({
       return {
         container:{ //容器空白触发清除所有已选组件状态
           onMousedown:(e:MouseEvent)=>{
-            e.stopPropagation();
+            // e.stopPropagation();
             e.preventDefault();
-            methods.clearFocus()
+            if(e.currentTarget!==e.target) return;
+            
+            if(!e.shiftKey){
+              methods.clearFocus()
+              state.selectBlock = null
+            }
+            
           }
         },
         block:{
@@ -126,6 +130,7 @@ export const VisualEditor = defineComponent({
                 methods.clearFocus(block);
               }
             }
+            state.selectBlock = block
             blcokDraggier.mousedown(e);
           }
         }
@@ -137,20 +142,42 @@ export const VisualEditor = defineComponent({
       let dragState={
         startX:0,
         startY:0,
-        startPos:[] as {left:number,top:number}[]
+        startPos:[] as {left:number,top:number}[],
+        dragging:false,
+        marks:[] as {
+          x:{left:number,showLeft:number},
+          y:{top:number,showTop:number}
+        }[]
       }
       const mousedown = (e:MouseEvent)=>{
         dragState = {
           startX:e.clientX,
           startY:e.clientY,
-          startPos:focusData.value.focus.map(({top,left})=>({top,left}))
+          startPos:focusData.value.focus.map(({top,left})=>({top,left})),
+          dragging:false,
+          marks:(()=>{
+            const {focus ,unFocus} = focusData.value;
+            const {top,left} = state.selectBlock;
+            return
+          })()
         }
         document.addEventListener('mousemove',mousemove);
         document.addEventListener('mouseup', mouseup);
       }
       const mousemove = (e:MouseEvent) => {
-        const durX = e.clientX - dragState.startX;
-        const durY = e.clientY - dragState.startY;
+        let durX = e.clientX - dragState.startX;
+        let durY = e.clientY - dragState.startY;
+        if(!dragState.dragging){
+          dragState.dragging = true;
+          dragstart.emit()
+        }
+        if(e.shiftKey){
+          if(Math.abs(durX)> Math.abs(durY)){
+            durY = 0
+          }else{
+            durX = 0
+          }
+        }
         focusData.value.focus.forEach((block,index)=>{
           block.top = dragState.startPos[index].top + durY;
           block.left = dragState.startPos[index].left +durX;
@@ -172,7 +199,25 @@ export const VisualEditor = defineComponent({
     const buttons = [
       {label:'撤销',icon:'icon-back',handler:commander.undo,tip:'ctrl+z'},
       { label: '重做', icon: 'icon-back', handler: commander.redo, tip: 'ctrl+z'},
+      { label: '导入', icon: 'icon-import', handler: async ()=>{
+        const text = await $$dialog.textarea()
+        try {
+          const data = JSON.parse(text||'')
+          dataModel.value = data
+        } catch (error) {
+          console.log(error)
+        }
+        
+      }, tip: '' },
+      {
+        label: '导出', icon: 'icon-export', handler: () => $$dialog.textarea(JSON.stringify(dataModel.value),{
+          editReadonly:true
+        })
+      },
+      { label: '置顶', icon: 'icon-place-top', handler: () => commander.placeTop(), tip: '' },
+      { label: '置底', icon: 'icon-place-bottom', handler: () => commander.placeBottom(), tip: '' },
       { label: '删除', icon: 'icon-delete', handler: ()=>commander.delete(), tip: 'ctrl+d,backspace,delete' },
+      { label: '清空', icon: 'icon-reset', handler: ()=>commander.clear(), tip: '' },
     ]
     return () => (
       <div class="visual-editor">

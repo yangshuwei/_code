@@ -9,7 +9,8 @@ export const VisualEditorBlock = defineComponent({
     const el = ref({} as HTMLDivElement);
     const style = computed(()=>({
       top:`${props.block.top}px`,
-      left:`${props.block.left}px`
+      left:`${props.block.left}px`,
+      zIndex:props.block.zIndex,
     }))
     const classes = computed(()=>[
       'visual-editor-block',

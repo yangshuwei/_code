@@ -3,10 +3,14 @@ import { VisualEditor } from './visual-editor';
 
 export interface VisualEditorBlockData {
   componentKey:string,
-  top: number,
+  top: number, //组件top定位
   left: number,
-  adjustPosition:boolean,
-  focus:boolean
+  adjustPosition:boolean, //是否需要调整位置
+  focus:boolean, //当前是否被选中状态
+  zIndex:number,
+  width:number,
+  height:number,
+  hasResize:boolean //是否调整过宽高
 }
 
 
@@ -37,7 +41,11 @@ export function createNewBlock({
     left,
     componentKey:component!.key,
     adjustPosition:true,
-    focus:false
+    focus:false,
+    zIndex:0,
+    width:0,
+    height:0,
+    hasResize:false
   }
 }
 export function createVisualEditorConfig() {
