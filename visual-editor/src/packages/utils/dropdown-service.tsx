@@ -39,7 +39,6 @@ const ServiceComponent = defineComponent({
     })
     const service = (option:DropdownServiceOption)=>{
       state.option = option;
-      
       if('addEventListener' in option.reference){
         const {top,left,height} = option.reference.getBoundingClientRect()!
         state.top = top + height;
@@ -54,7 +53,7 @@ const ServiceComponent = defineComponent({
 
     const methods = {
       show:async ()=>{
-        await state.mounted;
+        // await state.mounted;
         state.showFlag = true;
       },
       hide: ()=>{

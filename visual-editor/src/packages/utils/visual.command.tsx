@@ -69,7 +69,7 @@ export function useVisualCommand(
         dragend.off(handler.dragend)
       }
     },
-    execute: () => {
+    execute() {
       let before = this.data.before;
       let after = deepcopy(dataModel.value.blocks||[])
       return {

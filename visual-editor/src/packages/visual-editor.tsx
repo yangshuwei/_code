@@ -5,6 +5,7 @@ import { $$dropdown, DropdownOption } from './utils/dropdown-service';
 import { useModel } from './utils/useModule';
 import { useVisualCommand } from './utils/visual.command';
 import { VisualEditorBlock } from './visual-editor-block';
+import { VisualOperatorEditor } from './visual-editor-operator';
 import './visual-editor.scss';
 import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEditorConfig, VisualEditorMarkLines, VisualEditorModelValue } from './visual-editor.utils';
 export const VisualEditor = defineComponent({
@@ -38,7 +39,7 @@ export const VisualEditor = defineComponent({
     const dragstart = createEvent();
     const dragend = createEvent();
     const state = reactive({
-      selectBlock: null as null | VisualEditorBlockData, //容器内当前选中的组件
+      selectBlock: undefined as undefined | VisualEditorBlockData, //容器内当前选中的组件
     })
     const methods = {
       
@@ -130,7 +131,7 @@ export const VisualEditor = defineComponent({
 
             if (!e.shiftKey) {
               methods.clearFocus()
-              state.selectBlock = null
+              state.selectBlock = undefined
             }
 
           }
@@ -338,7 +339,7 @@ export const VisualEditor = defineComponent({
             )
           }
         </div>
-        <div class="visual-editor-operator">visual-editor-operator</div>
+        <VisualOperatorEditor block={state.selectBlock} config={props.config} />
         <div class="visual-editor-body">
           <div class="visual-editor-content">
             <div class="visual-editor-container" style={containerStyle.value} ref={containerRef} {...focusHandler.container}>

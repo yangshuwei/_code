@@ -1,5 +1,6 @@
 
 import { VisualEditor } from './visual-editor';
+import { VisualEditorProps } from './visual-editor-props';
 
 export interface VisualEditorBlockData {
   componentKey:string,
@@ -24,8 +25,9 @@ export interface VisualEditorModelValue {
 export interface VisualEditorComponent { //自定义组件类型
   key: string,
   label: string,
-  preview: () => JSX.Element;
-  render: () => JSX.Element;
+  preview: () => JSX.Element,
+  render: () => JSX.Element,
+  props?:Record<string,VisualEditorProps>
 }
 export interface VisualEditorMarkLines{
   x:{left:number,showLeft:number}[],
