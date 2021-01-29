@@ -11,7 +11,8 @@ export interface VisualEditorBlockData {
   zIndex:number,
   width:number,
   height:number,
-  hasResize:boolean //是否调整过宽高
+  hasResize:boolean, //是否调整过宽高
+  props:Record<string,any>
 }
 
 
@@ -20,13 +21,13 @@ export interface VisualEditorModelValue {
     width: number,
     height: number
   },
-  blocks: VisualEditorBlockData[]
+  blocks?: VisualEditorBlockData[]
 }
 export interface VisualEditorComponent { //自定义组件类型
   key: string,
   label: string,
   preview: () => JSX.Element,
-  render: () => JSX.Element,
+  render: (data:{props:any}) => JSX.Element,
   props?:Record<string,VisualEditorProps>
 }
 export interface VisualEditorMarkLines{
@@ -51,7 +52,8 @@ export function createNewBlock({
     zIndex:0,
     width:0,
     height:0,
-    hasResize:false
+    hasResize:false,
+    props:{}
   }
 }
 export function createVisualEditorConfig() {
@@ -60,7 +62,12 @@ export function createVisualEditorConfig() {
   return {
     componentList,
     componentMap,
-    registry: (key: string, component: Omit<VisualEditorComponent, 'key'>) => { //注册组件
+    registry: <Props extends Record<string,VisualEditorProps> = {}>(key: string, component: {
+      label: string,
+      preview: () => JSX.Element,
+      render: (data:{props:{[key in keyof Props]:any}}) => JSX.Element,
+      props?: Props
+    }) => { //注册组件
       let comp = { ...component, key };
       componentList.push(comp);
       componentMap[key] = comp;

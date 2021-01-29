@@ -130,6 +130,9 @@ $primary:#409eff;
     bottom: 0;
     width: $operatorSize;
     background: #fff;
+    z-index: 2;
+    padding-top: 20px;
+    padding-left: 20px;
   }
 
   &>.visual-editor-body {
@@ -146,6 +149,7 @@ $primary:#409eff;
       height: 100%;
       display: flex;
       justify-content: center;
+      overflow-y: auto;
 
       &>.visual-editor-container {
         background: #fff;

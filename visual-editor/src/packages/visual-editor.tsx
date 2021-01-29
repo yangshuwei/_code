@@ -38,11 +38,15 @@ export const VisualEditor = defineComponent({
     })
     const dragstart = createEvent();
     const dragend = createEvent();
+    const selectIndex = ref(-1)
     const state = reactive({
-      selectBlock: undefined as undefined | VisualEditorBlockData, //容器内当前选中的组件
+      
+      // selectIndex:-1,
+      // selectBlock: undefined as undefined | VisualEditorBlockData, //容器内当前选中的组件
+      selectBlock:computed(()=>(dataModel.value.blocks||[])[selectIndex.value])
     })
     const methods = {
-      
+
       //清除选中状态
       clearFocus: (block?: VisualEditorBlockData) => {
         let blocks = (dataModel.value.blocks || []);
@@ -64,14 +68,14 @@ export const VisualEditor = defineComponent({
 
       //   }
       //  },
-      showBlockData:(block:VisualEditorBlockData)=>{
+      showBlockData: (block: VisualEditorBlockData) => {
         $$dialog.textarea(JSON.stringify(block))
       },
-      importBlockData: async (block: VisualEditorBlockData)=>{
+      importBlockData: async (block: VisualEditorBlockData) => {
         const text = await $$dialog.textarea();
         try {
           const data = JSON.parse(text || '')
-          commander.updateBlock(data,block)
+          commander.updateBlock(data, block)
         } catch (error) {
           console.log(error)
         }
@@ -131,13 +135,14 @@ export const VisualEditor = defineComponent({
 
             if (!e.shiftKey) {
               methods.clearFocus()
-              state.selectBlock = undefined
+              selectIndex.value = -1
+              // state.selectBlock = undefined
             }
 
           }
         },
         block: {
-          onMousedown: (e: MouseEvent, block: VisualEditorBlockData) => {
+          onMousedown: (e: MouseEvent, block: VisualEditorBlockData,index:number) => {
             e.stopPropagation();
             e.preventDefault();
             if (e.shiftKey) {
@@ -152,7 +157,8 @@ export const VisualEditor = defineComponent({
                 methods.clearFocus(block);
               }
             }
-            state.selectBlock = block
+            // state.selectBlock = block
+            selectIndex.value = index
             blcokDraggier.mousedown(e);
           }
         }
@@ -186,7 +192,12 @@ export const VisualEditor = defineComponent({
             const { focus, unFocus } = focusData.value;
             const { top, left, width, height } = state.selectBlock!;
             let lines: VisualEditorMarkLines = { x: [], y: [] } as VisualEditorMarkLines;
-            unFocus.forEach(block => {
+            [...unFocus,{
+              top:0,
+              left:0,
+              width:dataModel.value.container.width,
+              height:dataModel.value.container.height
+            }].forEach(block => {
               const { top: t, left: l, width: w, height: h } = block
               lines.y.push({ top: t, showTop: t }) //顶部对顶部
               lines.y.push({ top: t + h, showTop: t + h }) //顶部对底部
@@ -219,9 +230,10 @@ export const VisualEditor = defineComponent({
         // let durY = e.clientY - dragState.startY;
         if (e.shiftKey) {
           if (Math.abs(moveX - startX) > Math.abs(moveY - startY)) {
-            moveX = startX
-          } else {
             moveY = startY
+          } else {
+            
+            moveX = startX
           }
         }
         const currentLeft = dragState.startLeft + moveX - startX;
@@ -259,26 +271,26 @@ export const VisualEditor = defineComponent({
       const mouseup = (e: MouseEvent) => {
         document.removeEventListener('mousemove', mousemove);
         document.removeEventListener('mouseup', mouseup);
-        mark.x=null;
-        mark.y=null
-        if(dragState.dragging){
+        mark.x = null;
+        mark.y = null
+        if (dragState.dragging) {
           dragend.emit();
         }
       }
       return { mark, mousedown };
     })()
     const handler = {
-      onContextmenuBlock: (e: MouseEvent,block:VisualEditorBlockData) => {
+      onContextmenuBlock: (e: MouseEvent, block: VisualEditorBlockData) => {
         e.preventDefault();
         e.stopPropagation();
         $$dropdown({
           reference: e,
           content: () => <>
-            <DropdownOption label="置顶节点" icon="icon-place-top" {...{onClick:commander.placeTop}}/>
-            <DropdownOption label="置底节点" icon="icon-place-bottom" {...{onClick:commander.placeBottom}} />
-            <DropdownOption label="删除节点" icon="icon-delete" {...{onClick:commander.delete}}/>
-            <DropdownOption label="查看数据" icon="icon-browse" {...{onClick:()=>methods.showBlockData(block)}}/>
-            <DropdownOption label="导入节点" icon="icon-import" {...{onClick:()=>methods.importBlockData(block)}}/>
+            <DropdownOption label="置顶节点" icon="icon-place-top" {...{ onClick: commander.placeTop }} />
+            <DropdownOption label="置底节点" icon="icon-place-bottom" {...{ onClick: commander.placeBottom }} />
+            <DropdownOption label="删除节点" icon="icon-delete" {...{ onClick: commander.delete }} />
+            <DropdownOption label="查看数据" icon="icon-browse" {...{ onClick: () => methods.showBlockData(block) }} />
+            <DropdownOption label="导入节点" icon="icon-import" {...{ onClick: () => methods.importBlockData(block) }} />
           </>
         })
       }
@@ -339,15 +351,21 @@ export const VisualEditor = defineComponent({
             )
           }
         </div>
-        <VisualOperatorEditor block={state.selectBlock} config={props.config} />
+        <VisualOperatorEditor
+          block={state.selectBlock}
+          config={props.config}
+          dataModel={dataModel}
+          updateBlock={commander.updateBlock}
+          updateModelValue={commander.updateModelValue}
+        />
         <div class="visual-editor-body">
           <div class="visual-editor-content">
             <div class="visual-editor-container" style={containerStyle.value} ref={containerRef} {...focusHandler.container}>
               {
                 !!dataModel.value && !!dataModel.value.blocks && (dataModel.value.blocks.map((block, index) => (
                   <VisualEditorBlock config={props.config} block={block} key={index} {...{
-                    onMousedown: (e: MouseEvent) => focusHandler.block.onMousedown(e, block),
-                    onContextmenu: (e: MouseEvent) => handler.onContextmenuBlock(e,block)
+                    onMousedown: (e: MouseEvent) => focusHandler.block.onMousedown(e, block,index),
+                    onContextmenu: (e: MouseEvent) => handler.onContextmenuBlock(e, block)
                   }} />
                 ))
                 )}

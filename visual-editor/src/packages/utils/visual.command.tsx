@@ -117,10 +117,10 @@ export function useVisualCommand(
       }
       return{
         redo:()=>{
-          updateBlocks(deepcopy(data.after))
+          updateBlocks(deepcopy(data.after||[]))
         },
         undo:()=>{
-          updateBlocks(deepcopy(data.before))
+          updateBlocks(deepcopy(data.before||[]))
         }
       }
     }
@@ -147,10 +147,10 @@ export function useVisualCommand(
       }
       return {
         redo: () => {
-          updateBlocks(deepcopy(data.after))
+          updateBlocks(deepcopy(data.after||[]))
         },
         undo: () => {
-          updateBlocks(deepcopy(data.before))
+          updateBlocks(deepcopy(data.before||[]))
         }
       }
     }
@@ -176,9 +176,27 @@ export function useVisualCommand(
           updateBlocks(deepcopy(data.after))
         },
         undo:()=>{
-          updateBlocks(deepcopy(data.before))
+          updateBlocks(deepcopy(data.before||[]))
         }
       }
+
+    }
+  })
+  commander.registry({
+    name:'updateModelValue',
+    execute:(val:VisualEditorModelValue)=>{
+      let data = {
+        before:deepcopy(dataModel.value),
+        after:deepcopy(val)
+      }
+     return {
+       redo: () => { 
+         dataModel.value = data.after
+       },
+       undo:()=>{
+         dataModel.value = data.before;
+       }
+     }
 
     }
   })
@@ -191,5 +209,7 @@ export function useVisualCommand(
     placeTop: () => commander.state.commands.placeTop(),
     placeBottom: () => commander.state.commands.placeBottom(),
     updateBlock: (newBlock: VisualEditorBlockData, oldBlock: VisualEditorBlockData) => commander.state.commands.udateBlock(newBlock, oldBlock),
+    updateModelValue: (val:VisualEditorModelValue) => commander.state.commands.updateModelValue(val),
+
   }
 }

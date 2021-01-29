@@ -7,6 +7,7 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 300ms linear;
+  z-index: 99;
   .dropdown-option{
     padding: 5px 12px;
     font-size: 14px;
