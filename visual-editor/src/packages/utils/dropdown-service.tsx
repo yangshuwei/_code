@@ -20,7 +20,7 @@ const ServiceComponent = defineComponent({
   props:{
     option:{
       type:Object as PropType<DropdownServiceOption>,
-      reuqired:true
+      required:true
     }
   },
   setup(props){
@@ -70,7 +70,7 @@ const ServiceComponent = defineComponent({
       top:`${state.top}px`,
       left:`${state.left}px`
     }))
-    Object.assign(ctx.proxy,{service})
+    Object.assign(ctx.proxy!,{service})
     const onMousedownDocument = (e:MouseEvent)=>{
       if (!(el.value).contains(e.target as HTMLElement)){
         methods.hide()

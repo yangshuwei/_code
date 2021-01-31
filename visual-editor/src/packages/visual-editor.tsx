@@ -11,7 +11,8 @@ import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEdi
 export const VisualEditor = defineComponent({
   props: {
     modelValue: { type: Object as PropType<VisualEditorModelValue>, required: true },
-    config: { type: Object as PropType<VisualEditorConfig>, required: true }
+    config: { type: Object as PropType<VisualEditorConfig>, required: true },
+    formData: { type: Object as PropType<Record<string, any>>, required: true }
   },
   emits: {
     'update:modelValue': (val?: VisualEditorModelValue) => true,
@@ -40,13 +41,23 @@ export const VisualEditor = defineComponent({
     const dragend = createEvent();
     const selectIndex = ref(-1)
     const state = reactive({
-      
+
       // selectIndex:-1,
       // selectBlock: undefined as undefined | VisualEditorBlockData, //容器内当前选中的组件
-      selectBlock:computed(()=>(dataModel.value.blocks||[])[selectIndex.value])
+      selectBlock: computed(() => (dataModel.value.blocks || [])[selectIndex.value]),
+      preview: true,
+      editing:true,
     })
+    const classes = computed(() => [
+      'visual-editor',
+      {
+        'visual-editor-not-preview': !state.preview
+      }
+    ])
     const methods = {
-
+      openEdit:()=>{
+        state.editing = true;
+      },
       //清除选中状态
       clearFocus: (block?: VisualEditorBlockData) => {
         let blocks = (dataModel.value.blocks || []);
@@ -129,6 +140,7 @@ export const VisualEditor = defineComponent({
       return {
         container: { //容器空白触发清除所有已选组件状态
           onMousedown: (e: MouseEvent) => {
+            if (state.preview) return;
             // e.stopPropagation();
             e.preventDefault();
             if (e.currentTarget !== e.target) return;
@@ -142,9 +154,8 @@ export const VisualEditor = defineComponent({
           }
         },
         block: {
-          onMousedown: (e: MouseEvent, block: VisualEditorBlockData,index:number) => {
-            e.stopPropagation();
-            e.preventDefault();
+          onMousedown: (e: MouseEvent, block: VisualEditorBlockData, index: number) => {
+            if (state.preview) return;
             if (e.shiftKey) {
               if (focusData.value.focus.length <= 1) {
                 block.focus = true;
@@ -192,11 +203,11 @@ export const VisualEditor = defineComponent({
             const { focus, unFocus } = focusData.value;
             const { top, left, width, height } = state.selectBlock!;
             let lines: VisualEditorMarkLines = { x: [], y: [] } as VisualEditorMarkLines;
-            [...unFocus,{
-              top:0,
-              left:0,
-              width:dataModel.value.container.width,
-              height:dataModel.value.container.height
+            [...unFocus, {
+              top: 0,
+              left: 0,
+              width: dataModel.value.container.width,
+              height: dataModel.value.container.height
             }].forEach(block => {
               const { top: t, left: l, width: w, height: h } = block
               lines.y.push({ top: t, showTop: t }) //顶部对顶部
@@ -232,7 +243,7 @@ export const VisualEditor = defineComponent({
           if (Math.abs(moveX - startX) > Math.abs(moveY - startY)) {
             moveY = startY
           } else {
-            
+
             moveX = startX
           }
         }
@@ -281,6 +292,7 @@ export const VisualEditor = defineComponent({
     })()
     const handler = {
       onContextmenuBlock: (e: MouseEvent, block: VisualEditorBlockData) => {
+        if (state.preview) return;
         e.preventDefault();
         e.stopPropagation();
         $$dropdown({
@@ -306,6 +318,15 @@ export const VisualEditor = defineComponent({
       { label: '撤销', icon: 'icon-back', handler: commander.undo, tip: 'ctrl+z' },
       { label: '重做', icon: 'icon-back', handler: commander.redo, tip: 'ctrl+z' },
       {
+        label: () => state.preview ? '编辑' : '预览',
+        icon: () => state.preview ? 'icon-edit' : 'icon-browse',
+        handler: () => {
+          if (!state.preview) { methods.clearFocus() }
+          state.preview = !state.preview;
+        }
+
+      },
+      {
         label: '导入', icon: 'icon-import', handler: async () => {
           const text = await $$dialog.textarea()
           try {
@@ -326,9 +347,28 @@ export const VisualEditor = defineComponent({
       { label: '置底', icon: 'icon-place-bottom', handler: () => commander.placeBottom(), tip: '' },
       { label: '删除', icon: 'icon-delete', handler: () => commander.delete(), tip: 'ctrl+d,backspace,delete' },
       { label: '清空', icon: 'icon-reset', handler: () => commander.clear(), tip: '' },
+      { label: '关闭', icon: 'icon-close', handler: () => {
+        methods.clearFocus()
+        state.editing = false
+      }, tip: '' },
     ]
-    return () => (
-      <div class="visual-editor">
+    return () => <>
+      <div class="visual-editor-container" style={containerStyle.value} v-show={!state.editing}>
+        {
+          !!dataModel.value && !!dataModel.value.blocks && (dataModel.value.blocks.map((block, index) => (
+            <VisualEditorBlock config={props.config} block={block} key={index}
+              formData={props.formData}
+            />
+          ))
+          )}
+      <div class="visual-editor-container-button" onClick={methods.openEdit}>
+        <i class="iconfont icon-edit" />
+        <span>编辑组件</span>
+      </div>
+      </div>
+
+
+      <div class={classes.value} v-show={state.editing}>
         <div class="visual-editor-menu">
           {props.config.componentList.map(component =>
             <div class="visual-editor-menu-item"
@@ -343,11 +383,15 @@ export const VisualEditor = defineComponent({
         </div>
         <div class="visual-editor-head">
           {
-            buttons.map((btn, index) =>
-              (<div key={index} class="visual-editor-head-button" onClick={btn.handler}>
-                <i class={`iconfont ${btn.icon}`}></i>
-                <span>{btn.label}</span>
+            buttons.map((btn, index) => {
+              const label = typeof btn.label === 'function' ? btn.label() : btn.label;
+              const icon = typeof btn.icon === 'function' ? btn.icon() : btn.icon;
+              return (<div key={index} class="visual-editor-head-button" onClick={btn.handler}>
+                <i class={`iconfont ${icon}`}></i>
+                <span>{label}</span>
               </div>)
+            }
+
             )
           }
         </div>
@@ -363,10 +407,12 @@ export const VisualEditor = defineComponent({
             <div class="visual-editor-container" style={containerStyle.value} ref={containerRef} {...focusHandler.container}>
               {
                 !!dataModel.value && !!dataModel.value.blocks && (dataModel.value.blocks.map((block, index) => (
-                  <VisualEditorBlock config={props.config} block={block} key={index} {...{
-                    onMousedown: (e: MouseEvent) => focusHandler.block.onMousedown(e, block,index),
-                    onContextmenu: (e: MouseEvent) => handler.onContextmenuBlock(e, block)
-                  }} />
+                  <VisualEditorBlock config={props.config} block={block} key={index}
+                    formData={props.formData}
+                    {...{
+                      onMousedown: (e: MouseEvent) => focusHandler.block.onMousedown(e, block, index),
+                      onContextmenu: (e: MouseEvent) => handler.onContextmenuBlock(e, block)
+                    }} />
                 ))
                 )}
               {
@@ -379,12 +425,10 @@ export const VisualEditor = defineComponent({
                   <div class="visual-editor-mark-line-x" style={{ left: `${blcokDraggier.mark.x}px` }} />
                 )
               }
-
             </div>
-
           </div>
         </div>
       </div>
-    )
+    </>
   }
 })

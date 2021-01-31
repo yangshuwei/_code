@@ -1,46 +1,101 @@
 <template>
-<div>
-  hello
-<visual-editor v-model="jsonData" :config="visualConfig" />
-</div>
-  
+  <div>
+    hello
+    <visual-editor
+      v-model="jsonData"
+      :config="visualConfig"
+      :formData="formData"
+    />
+    <div style="text-align:center">
+      {{
+        JSON.stringify(formData)
+      }}
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import {VisualEditor} from './packages/visual-editor';
-import {visualConfig} from './visual.config';
+import { defineComponent } from "vue";
+import { VisualEditor } from "./packages/visual-editor";
+import { visualConfig } from "./visual.config";
 // import {TestUseModule} from './packages/utils/useModule';
 export default defineComponent({
-  name: 'App',
+  name: "App",
   components: {
     VisualEditor,
     // TestUseModule
   },
-  data(){
+  data() {
     return {
       visualConfig,
-      jsonData:{
-        container:{
-          heigth:500,
-          width:800
-        },
-        blocks:[
+      jsonData: {
+        container: { heigth: 500, width: 800 },
+        blocks: [
           {
-            top:100,
-            left:100,
-            componentKey:'button',
+            top: 92,
+            left: 211,
+            componentKey: "text",
+            adjustPosition: true,
+            focus: false,
+            zIndex: 0,
+            width: 64,
+            height: 21,
+            hasResize: false,
+            props: {},
+            model: {},
           },
           {
-            top:200,
-            left:200,
-            componentKey:'input'
+            top: 57,
+            left: 500.5,
+            componentKey: "button",
+            adjustPosition: true,
+            focus: true,
+            zIndex: 0,
+            width: 70,
+            height: 40,
+            hasResize: false,
+            props: {},
+            model: {},
           },
-        ]
-      }
-    }
-  }
+          {
+            top: 208,
+            left: 427,
+            componentKey: "select",
+            adjustPosition: true,
+            focus: false,
+            zIndex: 0,
+            width: 217,
+            height: 40,
+            hasResize: false,
+            props: {},
+            model: {},
+          },
+          {
+            top: 326,
+            left: 582,
+            componentKey: "input",
+            adjustPosition: true,
+            focus: false,
+            zIndex: 0,
+            width: 202,
+            height: 40,
+            hasResize: false,
+            props: {},
+            model: {},
+          },
+        ],
+      },
+      formData: {
+        username: "admin",
+      },
+    };
+  },
 });
 </script>
+<style>
+  .app{
+    padding-bottom: 200px;
+  }
+</style>
 
 
