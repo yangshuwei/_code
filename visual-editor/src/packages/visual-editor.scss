@@ -151,45 +151,67 @@ $primary:#409eff;
       justify-content: center;
       overflow-y: auto;
 
-      &>.visual-editor-container {
-        background: #fff;
-        flex-shrink: 0;
-        flex-grow: 0;
-        position: relative;
+      
+    }
 
-        .visual-editor-block {
-          position: absolute;
-
-          &:after {
+  }
+  &.visual-editor-not-preview{
+    &>.visual-editor-body {
+      .visual-editor-container{
+        border: 1px dashed $primary;
+        box-sizing: border-box;
+        .visual-editor-block{
+          &:after{
+            $space:3px;
             position: absolute;
-            left: -3px;
-            top: -3px;
-            right: -3px;
-            bottom: -3px;
-            content: '';
+            top: -$space;
+            left: -$space;
+            right: -$space;
+            bottom: -$space;
+            content:'';
           }
-
-          &.visual-editor-block-focus {
-            &::after {
-              border: 1px dashed $primary;
-            }
-
-          }
-        }
-        .visual-editor-mark-line-y{
-          position: absolute;
-          left: 0;
-          right: 0;
-          border-top: dashed 1px $primary;
-        }
-        .visual-editor-mark-line-x{
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          border-left: dashed 1px $primary;
         }
       }
     }
+  }
+}
 
+
+.visual-editor-container {
+  background: #fff;
+  flex-shrink: 0;
+  flex-grow: 0;
+  position: relative;
+
+  .visual-editor-block {
+    position: absolute;
+
+    &:after {
+      position: absolute;
+      left: -3px;
+      top: -3px;
+      right: -3px;
+      bottom: -3px;
+      content: '';
+    }
+
+    &.visual-editor-block-focus {
+      &::after {
+        border: 1px dashed $primary;
+      }
+
+    }
+  }
+  .visual-editor-mark-line-y{
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: dashed 1px $primary;
+  }
+  .visual-editor-mark-line-x{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-left: dashed 1px $primary;
   }
 }

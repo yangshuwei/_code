@@ -45,14 +45,17 @@ export function createEditorSelectProp(label:string,options:VisualEditorSelectOp
 
 
 export type VisualEditorTableOptions = {
-    label:string,
-    filed:string,
-
-}[]
-export function createEditorTableProp(label: string, table: VisualEditorTableOptions):VisualEditorProps{
+    options:{
+        label:string,
+        field:string,
+    
+    }[],
+    showKey:string
+}
+export function createEditorTableProp(label: string, option: VisualEditorTableOptions):VisualEditorProps{
     return {
         type: VisualEditorPropsType.table,
         label,
-        table
+        table:option
     }
 }
