@@ -1,42 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef,forwardRef,useImperativeHandle} from 'react';
 import City from "./city"
-const Home = (props) =>{
-    const [arr,setArr] = useState(0)
-    const [data,setData] = useState([
-    
-        {
-            pid:1,
-            cid:2,
-            rid:3
-        },
-        {
-            pid:2,
-            cid:4,
-            rid:6
-        }
-    ])
-    useEffect(()=>{
-        function aa(){
-        
-            bb()
-            console.log(arr)
-        }   
 
-        function bb(){
-            setArr(1)
-            console.log(arr)
-        }
-        aa()
-        
-    })
-     
-   
-    return(
-        <>
-        
-            
-        <City info="aa"></City>
-        </>
-    )
+
+let ForwordFunctionChild = React.forwardRef(City); 
+function Parent(){
+  const functionChildRef = React.useRef();
+  const getFocus = ()=>{
+    functionChildRef.current.handlerChild()
+  }
+  return(
+    <div>
+      <ForwordFunctionChild ref={functionChildRef}/>
+      <button onClick={getFocus}>获取</button>
+    </div>
+  )
 }
-export default Home
+// function useImperativeHandle(ref,factory){
+//   ref.current = factory()
+// }
+// function FunctionChild(props,ref){
+//   let c ={current:null};
+//   useImperativeHandle(ref,()=>(
+//     {
+//       handleChild(){
+//         console.log(1111)
+//       }
+//     }
+//   ))
+//   return <input type="text" ref={c}/>
+// }
+export default Parent
