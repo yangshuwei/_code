@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    function Parent(a) {
+      console.log(a)
+      this.name = a
+    }
+    Parent.prototype.getA = function () {
+      console.log(this)
+      console.log(this.name)
+    }
+    function Child(b) {
+      this.name = b
+      Parent.call(this, b)
+    }
+    console.dir(Object.create(Parent.prototype))
+    Child.prototype = Object.create(Parent.prototype)
+    Child.constructor = Child;
+    let c = new Child(1)
+    console.dir(Child)
+    console.dir(c)
+    c.getA()
+  </script>
+  <script>
+    Object.create = function (obj) {
+      function Fn() { }
+      Fn.prototype = obj
+      return new Fn();
+    }
+  </script>
+  <script>
+    function extend(Parent,Child){
+      
+    }
+  </script>
+</body>
+
+</html>

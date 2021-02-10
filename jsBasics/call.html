@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    function A(a){
+      // console.log(this)
+      this.a =a;
+    }
+    A.prototype.getA = function () {
+        console.log(this.a)
+      }
+    function B(b) {
+        this.b = b;
+        A.call(this,200) //this=>B的实例b1
+    }
+    B.prototype.getB = function () {
+        console.log(this.b)
+      }
+      let b1 = new B(100)
+      console.dir(B)
+      // console.log(b1.a)
+  </script>
+</body>
+</html>
