@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function A(a) {
+        this.a =a
+      }
+      A.prototype.getA = function(){
+        console.log(this.a)
+      }
+      let a1 = new A(100)
+
+      function B(b){
+        this.b = b;
+      }
+      B.prototype = new A(200);
+      B.prototype.constructor = B
+      B.prototype.getB = function(){
+        console.log(this.b)
+      }
+      
+      // B.prototype.__proto__ = A.prototype
+      let b1 = new B(200);
+      // console.dir(b1)
+      // console.dir(A)
+      console.dir(B)
+      // console.dir(b1)
+      b1.getB()
+      // b1.getA(200)
+      //console.log(a1.__proto__ == A.prototype) //true getA方法在构造函数A的原型上A.prototype   a1是A的实例，要想使用getA方法就要通过隐式属性__proto__到构造函数的原型上去寻找
+    </script>
+  </body>
+</html>
