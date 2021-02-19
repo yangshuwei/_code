@@ -1,5 +1,5 @@
 import React from 'react';
-import EventEmitter from 'events';
+
 import Child1 from './child1';
 import Child2 from './child2';
 function App(){
