@@ -131,7 +131,7 @@ Promise.resolve(123).finally((data) => { // 这里传入的函数 无论如何�
 // })
 
 // promise的链式调用问题
-// 1.如果then方法中（成功或者失败） 返回的不是一个promise，会将这个值传递给外层下一次then的成功结果
+// 1.如果then方法中（成者功或失败） 返回的不是一个promise，会将这个值传递给外层下一次then的成功结果
 // 2.如果执行then方法中的方法出错了 抛出异常 我走到下一个then的失败
 // 3.如果返回的是一个promise 会用这个promise的结果作为下一次then的成功或者失败
 

@@ -12,28 +12,36 @@ const read = (...args) => {
 }
  Promise = require('./promise')
 let p = read(path.resolve(__dirname,'name.txt'), 'utf8')
-
+console.log(p)
 let p2 = p.then((data) => {
+    console.log(data)
     // throw new Error('');
-    return new Promise((resolve,reject)=>{
-        resolve( new Promise((resolve,reject)=>{
-            resolve( new Promise((resolve,reject)=>{
-                resolve( new Promise((resolve,reject)=>{
-                    setTimeout(() => {
-                        resolve('ok');
-                    }, 1000);
-               }))
-           }))
-       }))
-   })
+//     return new Promise((resolve,reject)=>{
+//         resolve( new Promise((resolve,reject)=>{
+//             resolve( new Promise((resolve,reject)=>{
+//                 resolve( new Promise((resolve,reject)=>{
+//                     setTimeout(() => {
+//                         reject('ok');
+//                     }, 1000);
+//                }))
+//            }))
+//        }))
+//    })
+// return 1
+// const p3 = new Promise(function(resolve,rejected){
+//     return 4
+// })
+    return data
     // return read(data,'utf8')
 }, err => {
     console.log('`````', err)
     return 200
+}).then(success=>{
+    console.log('success-',success)
+},error=>{
+    console.log('error',error);
 })
-p2.then().then().then(data=>{
-    console.log(data)
-})
+
 
 
 

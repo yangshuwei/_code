@@ -20,7 +20,7 @@ class Promise {
         this.status = STATUS.PENDING;
         this.onResolvedCallbacks = []; // 存放成功的回调的 
         this.onRejectedCallbacks = []; // 存放失败的回调的
-        const reslove = (val) => {
+        const resolve = (val) => {
             if(val instanceof Promise){
                 return val.then(resolve, reject)
             }
@@ -41,12 +41,14 @@ class Promise {
             }
         }
         try {
-            executor(reslove, reject)
+            executor(resolve, reject)
         } catch (error) {
             reject(error)
         }
     }
     then(onFulfilled, onRejected) {
+        // console.log('onFulfilled-',typeof onFulfilled)
+        // console.log('onRejected-',typeof onRejected)
         onFulfilled = typeof onFulfilled == 'function' ? onFulfilled : (data)=>{
             return data
         }
@@ -54,7 +56,7 @@ class Promise {
             throw err
         }
         let promise2 = new Promise((resolve, reject) => {
-
+            console.log(this.status)
             if (this.status == STATUS.FULFILED) {
                 setTimeout(() => {
                     let x = onFulfilled(this.value)
