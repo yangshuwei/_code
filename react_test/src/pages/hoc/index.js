@@ -36,4 +36,17 @@ function Loading(loadingMessage){
     }
   }
 }
-export default Loading('加载中')(WithOnchange)
+class Hello extends React.Component{
+  
+  render(){
+    return <button>{this.state.number}</button>
+  }
+}
+const warp = OldComponent =>{
+  return class extends OldComponent{
+    render(){
+      super.render()
+    }
+  }
+}
+// export default Loading('加载中')(WithOnchange)
