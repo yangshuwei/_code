@@ -1,4 +1,4 @@
-function bindActionCreators(actionCreator, dispatch) {
+function bindActionCreators(actionCreator, dispatch) {  //动态调用dispatch，不需每次手动调用
 
   if (typeof actionCreator === 'function') {
 
