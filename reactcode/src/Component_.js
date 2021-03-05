@@ -19,7 +19,7 @@ class Updater {
     this.pendingStates = [];
   }
   addState(partialState) {
-    this.pendingStates.push(partialState);
+    this.pendingStates.push(partialState);//状态队列
     this.emitUpdate()
   }
   emitUpdate(nextProps) {
@@ -73,7 +73,7 @@ class Component {
   }
   setState(newState) {
     // debugger
-    this.updater.addState(newState) //将传入的state添加到更新器队列中
+    this.updater.addState(newState) //将传入的state添加到状态更新器队列中
   }
   forceUpdate() {
     if (this.componentWillUpdate) { //生命周期函数 在生成新的虚拟dom之前调用

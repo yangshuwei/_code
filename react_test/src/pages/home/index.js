@@ -1,6 +1,9 @@
 import React, { useEffect, useState,useRef,forwardRef,useImperativeHandle} from 'react';
 import City from "./city"
+import {Obj} from './test'
 
+console.log(Obj)
+export {Obj}
 class Parent extends React.Component{
   state ={flag:false}
   componentDidMount(){
