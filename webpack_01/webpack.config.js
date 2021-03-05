@@ -1,8 +1,8 @@
 
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 module.exports={
-  mode:'development',
   devtool:'source-map',
   entry:{
     app:'./src/index.js'
@@ -37,6 +37,14 @@ module.exports={
     new HtmlWebpackPlugin({
       filename:'index.html',
       template:'./public/index.html',
-    })
-  ]
+    }),
+    new webpack.HotModuleReplacementPlugin()
+  ],
+  devServer:{
+    contentBase:path.resolve(__dirname,'dist'),
+    open:true,
+    port:3001,
+    hot:true,
+    host:'0.0.0.0'
+  }
 }
