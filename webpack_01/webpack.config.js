@@ -3,8 +3,10 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ConsolePlugin = require('./plugins/console-plugin');
 const webpack = require('webpack');
-module.exports={
-  devtool:'source-map',
+const speedMeasureWebpackPlugin = require('speed-measure-webpack-plugin');
+const smv = new speedMeasureWebpackPlugin();
+module.exports=smv.wrap({
+  devtool:false,
   entry:{
     app:'./src/index.js'
   },
@@ -15,7 +17,8 @@ module.exports={
   resolve:{
     extensions:[".js",".jsx",".json",".css"],
     alias:{
-      "bootstrap":path.resolve(__dirname,'node_modules/bootstrap/dist/bootstrap.css')
+      "bootstrap":path.resolve(__dirname,'node_modules/bootstrap/dist/bootstrap.css'),
+      "jquery":path.resolve(__dirname,'node_modules/jquery/dist/jquery.min.js')
     },
     modules:[path.resolve(__dirname,'node_modules')]
   },
@@ -43,12 +46,13 @@ module.exports={
     ]
   },
   plugins:[
-    new HtmlWebpackPlugin({
-      filename:'index.html',
-      template:'./public/index.html',
-    }),
+    // new HtmlWebpackPlugin({
+    //   filename:'index.html',
+    //   template:'./public/index.html',
+    // }),
     new webpack.HotModuleReplacementPlugin(),
-    new ConsolePlugin()
+    // new ConsolePlugin(),
+    new webpack.IgnorePlugin(/\.\/locale/,/moment$/)
   ],
   devServer:{
     contentBase:path.resolve(__dirname,'dist'),
@@ -57,4 +61,4 @@ module.exports={
     hot:true,
     host:'0.0.0.0'
   }
-}
+})

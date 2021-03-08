@@ -1,3 +1,4 @@
-// import moment from 'moment'
-import 'jquery'
-console.log($);
+import moment from 'moment'
+console.log(moment)
+// import 'jquery'
+// console.log($);
