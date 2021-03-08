@@ -11,7 +11,15 @@ module.exports={
     path:path.resolve(__dirname,'dist'),
     filename:'app.js'
   },
+  resolve:{
+    extensions:[".js",".jsx",".json",".css"],
+    alias:{
+      "bootstrap":path.resolve(__dirname,'node_modules/bootstrap/dist/bootstrap.css')
+    },
+    modules:[path.resolve(__dirname,'node_modules')]
+  },
   module:{
+    noParse:/jquery/,
     rules:[
       {
         test: /\.js$/,
