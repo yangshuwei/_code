@@ -1,6 +1,7 @@
 
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ConsolePlugin = require('./plugins/console-plugin');
 const webpack = require('webpack');
 module.exports={
   devtool:'source-map',
@@ -28,7 +29,7 @@ module.exports={
         }
       },
       {
-        test:'/\.css$/',use:['style-loader','css-loader']
+        test:/\.css$/,use:['style-loader','css-loader']
       },
       
     ]
@@ -38,7 +39,8 @@ module.exports={
       filename:'index.html',
       template:'./public/index.html',
     }),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new ConsolePlugin()
   ],
   devServer:{
     contentBase:path.resolve(__dirname,'dist'),
