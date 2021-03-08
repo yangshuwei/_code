@@ -26,3 +26,13 @@ module.exports = smv.warp({
 
 分析各个模块大小的插件
 bundle-analyzer-plugin
+
+
+如果再低版本浏览器中使用es6语法不被支持时，需要引入polyfill  可以直接在模块中全量引入 "babel-polyfill"  但是这样打包出的文件很大
+所以可以借助页面引入 <script src="polyfill.io/v3/polyfill.min.js" /> 按需加载需要的polyfill
+polyfill.io 会根据user-agent 中浏览器的信息 返回需要的polyfill
+
+
+
+purgecss-webpack-plugin mini-css-extract-plugin  css-loader glob  
+提取css为单独文件，并且去除没有用到的css
