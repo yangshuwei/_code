@@ -8,11 +8,12 @@ const smv = new speedMeasureWebpackPlugin();
 module.exports=smv.wrap({
   devtool:false,
   entry:{
-    app:'./src/index.js'
+    app:'./src/index.js',
   },
   output:{
     path:path.resolve(__dirname,'dist'),
-    filename:'app.js'
+    filename:'[name].[hash].js',
+    chunkFilename:'[name].[chunkhash].js'
   },
   resolve:{
     extensions:[".js",".jsx",".json",".css"],
@@ -26,12 +27,18 @@ module.exports=smv.wrap({
     noParse:/jquery/,
     rules:[
       {
+        loader:"thread-loader",
+        options:{
+          workers:3
+        }
+      },
+      {
         test: /\.js$/,
         exclude: [path.resolve(__dirname, "node_modules")],
         use: {
           loader:'babel-loader',
           options:{
-            presets:["@babel/preset-env","@babel/preset-react"],
+            presets: [["@babel/preset-env",{"modules":false}],"@babel/preset-react"],
             plugins:[
               ["@babel/plugin-proposal-decorators", { "legacy": true }],
               ["@babel/plugin-proposal-class-properties", { "loose": true }]
@@ -46,13 +53,16 @@ module.exports=smv.wrap({
     ]
   },
   plugins:[
-    // new HtmlWebpackPlugin({
-    //   filename:'index.html',
-    //   template:'./public/index.html',
-    // }),
+    new HtmlWebpackPlugin({
+      filename:'index.html',
+      template:'./public/index.html',
+    }),
     new webpack.HotModuleReplacementPlugin(),
     // new ConsolePlugin(),
-    new webpack.IgnorePlugin(/\.\/locale/,/moment$/)
+    new webpack.IgnorePlugin(/\.\/locale/,/moment$/),
+    new webpack.DllReferencePlugin({
+      manifest:require('./dist/utils.mainfest.json')
+    })
   ],
   devServer:{
     contentBase:path.resolve(__dirname,'dist'),
