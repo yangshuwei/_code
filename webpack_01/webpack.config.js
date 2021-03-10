@@ -5,6 +5,7 @@ const ConsolePlugin = require('./plugins/console-plugin');
 const webpack = require('webpack');
 const speedMeasureWebpackPlugin = require('speed-measure-webpack-plugin');
 const smv = new speedMeasureWebpackPlugin();
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 module.exports=smv.wrap({
   devtool:false,
   entry:{
@@ -13,7 +14,7 @@ module.exports=smv.wrap({
   output:{
     path:path.resolve(__dirname,'dist'),
     filename:'[name].[hash].js',
-    chunkFilename:'[name].[chunkhash].js'
+    chunkFilename:'[name].js'
   },
   resolve:{
     extensions:[".js",".jsx",".json",".css"],
@@ -23,15 +24,18 @@ module.exports=smv.wrap({
     },
     modules:[path.resolve(__dirname,'node_modules')]
   },
+  resolveLoader:{
+    modules:[path.resolve(__dirname,'loaders'),path.resolve(__dirname,'node_modules')]
+  },
   module:{
     noParse:/jquery/,
     rules:[
-      {
-        loader:"thread-loader",
-        options:{
-          workers:3
-        }
-      },
+      // {
+      //   loader:"thread-loader",
+      //   options:{
+      //     workers:3
+      //   }
+      // },
       {
         test: /\.js$/,
         exclude: [path.resolve(__dirname, "node_modules")],
@@ -49,20 +53,39 @@ module.exports=smv.wrap({
       {
         test:/\.css$/,use:['style-loader','css-loader']
       },
-      
+      // {
+      //   test:/\.png|jpg$/,
+      //   use:{
+      //     loader:'file-loader',
+      //     options:{
+      //       filename:'[hash].[ext]'
+      //     }
+      //   }
+      // },
+      {
+        test:/\.png|jpg$/,
+        use:{
+          loader:'url-loader',
+          options:{
+            filename:'[hash].[ext]',
+            limit:8*1024
+          }
+        }
+      }
     ]
   },
   plugins:[
-    new HtmlWebpackPlugin({
-      filename:'index.html',
-      template:'./public/index.html',
-    }),
+    // new HtmlWebpackPlugin({
+    //   filename:'index.html',
+    //   template:'./public/index.html',
+    // }),
     new webpack.HotModuleReplacementPlugin(),
     // new ConsolePlugin(),
     new webpack.IgnorePlugin(/\.\/locale/,/moment$/),
-    new webpack.DllReferencePlugin({
-      manifest:require('./dist/utils.mainfest.json')
-    })
+    // new webpack.DllReferencePlugin({
+    //   manifest:require('./dist/utils.mainfest.json')
+    // })
+    new CleanWebpackPlugin()
   ],
   devServer:{
     contentBase:path.resolve(__dirname,'dist'),

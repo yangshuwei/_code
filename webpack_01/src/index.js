@@ -1,1 +1,2 @@
-import('./prefetch'/*webpackPrefetch */)
+const url = require('./baidu.png')
+// console.log(url)
