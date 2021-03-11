@@ -1,2 +1,1 @@
-const url = require('./baidu.png')
-// console.log(url)
+import './index.css'

@@ -51,7 +51,7 @@ module.exports=smv.wrap({
         }
       },
       {
-        test:/\.css$/,use:['style-loader','css-loader']
+        test:/\.css|.less$/,use:['style-loader','css-loader']
       },
       // {
       //   test:/\.png|jpg$/,
@@ -75,13 +75,13 @@ module.exports=smv.wrap({
     ]
   },
   plugins:[
-    // new HtmlWebpackPlugin({
-    //   filename:'index.html',
-    //   template:'./public/index.html',
-    // }),
-    new webpack.HotModuleReplacementPlugin(),
-    // new ConsolePlugin(),
-    new webpack.IgnorePlugin(/\.\/locale/,/moment$/),
+    new HtmlWebpackPlugin({
+      filename:'../dist/index.html',
+      template:'./src/index.html',
+    }),
+    // new webpack.HotModuleReplacementPlugin(),
+    // // new ConsolePlugin(),
+    // new webpack.IgnorePlugin(/\.\/locale/,/moment$/),
     // new webpack.DllReferencePlugin({
     //   manifest:require('./dist/utils.mainfest.json')
     // })
