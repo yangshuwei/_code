@@ -27,6 +27,7 @@ class Promise {
             if (this.status == STATUS.PENDING) {
                 this.status = STATUS.FULFILED
                 this.value = val;
+                console.log(this.onResolvedCallbacks,val)
                 this.onResolvedCallbacks.forEach(fn => {
                     fn()
                 });
@@ -52,14 +53,16 @@ class Promise {
         onFulfilled = typeof onFulfilled == 'function' ? onFulfilled : (data)=>{
             return data
         }
+        console.log(onFulfilled)
         onRejected = typeof onRejected === 'function' ?onRejected :(err)=>{
             throw err
         }
         let promise2 = new Promise((resolve, reject) => {
-            console.log(this.status)
+            console.log('then----',this.status)
             if (this.status == STATUS.FULFILED) {
                 setTimeout(() => {
                     let x = onFulfilled(this.value)
+                   
                     try {
 
                         resolvePromise(x, promise2, resolve, reject)
@@ -100,6 +103,7 @@ class Promise {
 
                 })
                 this.onRejectedCallbacks.push(() => {
+
                     setTimeout(() => {
                         let x = onRejected(this.reason)
                         try {
