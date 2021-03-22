@@ -1,22 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
 </head>
+
 <body>
-    <script>
-      class A{
-        constructor(){
-          this.state = {number:0}
+  <!-- <script src="limitLoad.js"></script> -->
+  <script>
+    function imgLoad(url) {
+      return new Promise((resolve, reject) => {
+        let img = new Image();
+        console.log(`---`, url.info, `start`);
+        // img.onload = function(){
+        setTimeout(() => {
+          console.log(url.info, 'ok')
+          resolve()
+        }, url.time);
+
+        // }
+        // img.onerror = reject;
+        // img.src = url
+      })
+    }
+
+    function limitLoad(urls, handler, limit) {
+      const sequence = [].concat(urls)
+      let promises = [];
+      promises = sequence.splice(0, limit).map((url, index) => { //先取出limit个 包装成promise
+        return handler(url).then(() => {
+          return index
+        })
+      })
+      // console.log('promises-',promises)
+      // console.log('sequence-',sequence)
+      let p = Promise.race(promises);//返回执行最快的promise
+      console.log(p)//Promise
+
+      for (let i = 0; i < sequence.length; i++) { //循环剩下的
+        p = p.then((finishIndex) => {//第一次循环获取到已经执行完毕的url在promises中的索引
+          // console.log('finishIndex', promises[finishIndex])
+          //promises[finishIndex] =>代表哪个先完成了，完成了就把位置让出来，放进去一个新的url
+          promises[finishIndex] = handler(sequence[i]).then(() => {
+            // console.log('nextInqadex-', finishIndex)
+            return finishIndex
+          })
+          return Promise.race(promises) //放进去一个新的，始终保持并发请求数为limit，下一次循环的时候再次拿出最先执行完的
+        })
+      }
+    }
+
+
+    function multiRequest(tasks, limit) {
+      let results = [];
+      let targets = new Array(limit).fill(null);
+      let index = 0;
+      targets = targets.map(() => {
+        return new Promise((resolve, reject) => {
+          const next = function () {
+            if (index >= tasks.length) {
+              console.log(111)
+              resolve()
+              return
+            }
+            let oldIndex = index;
+            let task = tasks[index++]
+            console.log(task)
+            task().then(res => {
+              results[oldIndex] = res;
+              next()
+            });
+          };
+          next()
+        });
+      });
+      return Promise.all(targets).then(() => results)
+    }
+    let urls = [
+      {
+        info: '第1张',
+        time: 1500
+      },
+      {
+        info: '第2张',
+        time: 1000
+      },
+      {
+        info: '第3张',
+        time: 2000
+      },
+      {
+        info: '第4张',
+        time: 2500
+      },
+      {
+        info: '第5张',
+        time: 2200
+      },
+      {
+        info: '第6张',
+        time: 3000
+      },
+      {
+        info: '第7张',
+        time: 2800
+      },
+      {
+        info: '第8张',
+        time: 3200
+      },
+    ]
+
+    // limitLoad(urls, imgLoad, 3)
+    const delay = (interval) => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve(interval)
+        }, interval);
+      })
+    }
+    let tasks = [
+      () => delay(1000),
+      () => delay(1002),
+      () => delay(1004),
+      () => delay(1006),
+      () => delay(2008),
+      () => delay(1010),
+    ]
+    // multiRequest(tasks, 2).then(result => {
+    //   console.log(result)
+    // })
+
+    function createReuqest(tasks, limit, callback) {
+      class TaskQueue {
+        running = 0;
+        queue = [];
+        results = [];
+        add(task) {
+          this.queue.push(task);
+          this.next()
         }
-        handler(){
-          console.log(this.state)
+        next() {
+          while (this.running<limit&&this.queue.length) {
+            this.running++
+            let task = this.queue.shift();
+            task().then(result => {
+              this.results.push(result)
+            }).finally(() => {
+              this.running--
+              this.next()
+            })
+          }
+          if(this.running ==0) callback(this.results)
         }
       }
-      let a = new A()
-      a.handler();
-    </script>
+      let tq = new TaskQueue;
+      tasks.forEach(task => {
+        tq.add(task)
+      });
+    }
+    createReuqest(tasks,2,(result)=>{
+      console.log(result)
+    })
+  </script>
 </body>
+
 </html>
