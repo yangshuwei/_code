@@ -2,6 +2,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ConsolePlugin = require('./plugins/console-plugin');
+const ClearWebpackExcludeDll = require('./plugins/clear-webpack-exclude-dll')
 const webpack = require('webpack');
 const speedMeasureWebpackPlugin = require('speed-measure-webpack-plugin');
 const smv = new speedMeasureWebpackPlugin();
@@ -85,7 +86,10 @@ module.exports=smv.wrap({
     // new webpack.DllReferencePlugin({
     //   manifest:require('./dist/utils.mainfest.json')
     // })
-    new CleanWebpackPlugin()
+    new CleanWebpackPlugin(),
+    new ClearWebpackExcludeDll({
+      exclude:'dll.js'
+    })
   ],
   devServer:{
     contentBase:path.resolve(__dirname,'dist'),
