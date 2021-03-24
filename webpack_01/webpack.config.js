@@ -76,19 +76,19 @@ module.exports=smv.wrap({
     ]
   },
   plugins:[
-    new HtmlWebpackPlugin({
-      filename:'../dist/index.html',
-      template:'./src/index.html',
-    }),
+    // new HtmlWebpackPlugin({
+    //   filename:'../dist/index.html',
+    //   template:'./src/index.html',
+    // }),
     // new webpack.HotModuleReplacementPlugin(),
     // // new ConsolePlugin(),
     // new webpack.IgnorePlugin(/\.\/locale/,/moment$/),
     // new webpack.DllReferencePlugin({
     //   manifest:require('./dist/utils.mainfest.json')
     // })
-    new CleanWebpackPlugin(),
+    // new CleanWebpackPlugin(),
     new ClearWebpackExcludeDll({
-      exclude:'dll.js'
+      exclude:['_dll_utils.js','utils.mainfest.json']
     })
   ],
   devServer:{
