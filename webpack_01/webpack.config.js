@@ -2,7 +2,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ConsolePlugin = require('./plugins/console-plugin');
-const ClearWebpackExcludeDll = require('./plugins/clear-webpack-exclude-dll')
+const ClearWebpackExcludeDll = require('./plugins/clear-webpack-exclude-plugin')
 const webpack = require('webpack');
 const speedMeasureWebpackPlugin = require('speed-measure-webpack-plugin');
 const smv = new speedMeasureWebpackPlugin();
