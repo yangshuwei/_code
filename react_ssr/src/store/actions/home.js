@@ -6,7 +6,7 @@ export default {
 
         
         return function(dispatch,getState,request){ //redux-thunk 中间件
-            return axios.get('http://localhost:4000/api/users').then(result=>{
+            return request.get('/api/users').then(result=>{
                 // console.log(result)
                 let list  = result.data;
                 dispatch({

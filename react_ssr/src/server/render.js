@@ -5,18 +5,21 @@ import routes from '../routes';
 import { renderRoutes,matchRoutes } from 'react-router-config';
 import { Provider } from 'react-redux'
 import { getServerStore } from '../store';
+
 export default async function (ctx,next) {
   let store = getServerStore(ctx);
   
   let matchedRoutes = matchRoutes(routes,ctx.path)
   let promises=[];
-  matchedRoutes.forEach(route => {
-    if (route.loadData) {
+  console.log('matchedRoutes',matchedRoutes)
+  matchedRoutes.forEach(item => {
+
+    if (item.route.loadData) {
       // console.dir(route.loadData())
-       promises.push(route.loadData(store))
+       promises.push(item.route.loadData(store))
     }
   })
-  let result = await Promise.all(promises);
+  await Promise.all(promises);
     let html = await Promise.resolve(renderToString(
       <Provider store={store}>
         <StaticRouter context={{}} location={ctx.path}>
