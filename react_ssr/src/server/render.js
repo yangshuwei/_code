@@ -1,35 +1,49 @@
-import React, { Fragment} from 'react';
+import React, { Fragment } from 'react';
 import { renderToString } from 'react-dom/server';
-import {StaticRouter,Route} from 'react-router-dom'
+import { StaticRouter, Route, matchPath } from 'react-router-dom'
 import routes from '../routes';
-import Header from '../components/Header'
-import { renderRoutes } from 'react-router-config';
-export default function(ctx){
-  let html = renderToString(
-    <StaticRouter context={{}} location={ctx.path}>
-      <Header />
-      <Fragment>
-        {renderRoutes(routes)}
-        {/* {routes.map(route=>(
-          <Route exact={route.exact} path={route.path} component={route.component} key={route.key}></Route>
-        ))} */}
-      </Fragment>
-    </StaticRouter>
-  )
-  console.log(ctx.path)
-  ctx.body = `
-    <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
-      </head>
-      <body>
-          <div id="root">${html}</div>
-          <script src="/index.js"></script>
-      </body>
-      </html>
-  `
+import { renderRoutes,matchRoutes } from 'react-router-config';
+import { Provider } from 'react-redux'
+import { getServerStore } from '../store';
+export default async function (ctx,next) {
+  let store = getServerStore(ctx);
+  
+  let matchedRoutes = matchRoutes(routes,ctx.path)
+  let promises=[];
+  matchedRoutes.forEach(route => {
+    if (route.loadData) {
+      // console.dir(route.loadData())
+       promises.push(route.loadData(store))
+    }
+  })
+  let result = await Promise.all(promises);
+    let html = await Promise.resolve(renderToString(
+      <Provider store={store}>
+        <StaticRouter context={{}} location={ctx.path}>
+          
+          {renderRoutes(routes)}
+        </StaticRouter>
+      </Provider>
+  
+    ))
+    ctx.body = `
+      <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Document</title>
+        </head>
+        <body>
+            <div id="root">${html}</div>
+            <script>
+              window.context = {
+                state:${JSON.stringify(store.getState())}
+              }
+            </script>
+            <script src="/index.js"></script>
+        </body>
+        </html>
+    `
 }

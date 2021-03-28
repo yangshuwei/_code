@@ -1,5 +1,6 @@
 import * as type from '../action-type';
-export default function(state={number=0},action){
+let initState = {number:0}
+export default function(state=initState,action){
   switch (action.type) {
     case type.ADD:
       return {number:state.number+1}

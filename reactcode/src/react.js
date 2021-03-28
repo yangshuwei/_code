@@ -1,4 +1,4 @@
-import Component from './Component'
+import Component from './Component_'
 function createElement(type, config, children) {
     // console.log(config)
     let ref;

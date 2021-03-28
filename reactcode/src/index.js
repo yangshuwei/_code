@@ -1,5 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from './react';
+import ReactDOM from './react-dom';
 
 class Counter extends React.Component{
   state = {value:0}
@@ -10,7 +10,7 @@ class Counter extends React.Component{
     console.log(this.state.value)
   }
   componentDidMount(){
-    document.getElementById('btn').addEventListener('click',this.changeValue,false)
+    // document.getElementById('btn').addEventListener('click',this.changeValue,false)
   }
   render(){
     return(
