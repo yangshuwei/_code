@@ -7,5 +7,16 @@ module.exports = merge(base, {
   output: {
     path: path.resolve(__dirname, 'public'),
     filename: 'index.js'
+  },
+  module: {
+    roules: [
+      {
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          'css-loader',
+        ]
+      }
+    ]
   }
 })

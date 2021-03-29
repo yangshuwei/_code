@@ -2232,7 +2232,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (axios__WEBPACK_IMPORTED_MODULE_0___default().create({
-  baseURL: 'http://loacalhost:4000/'
+  baseURL: 'http://localhost:8081/'
 }));
 
 /***/ }),
@@ -2298,6 +2298,12 @@ __webpack_require__.r(__webpack_exports__);
     //返回一个函数  store.dispatch(action)
     return function (dispatch, getState, request) {
       //redux-thunk 中间件
+      // return Promise.resolve(
+      //     dispatch({
+      //         type: types.SET_HOME_LIST,
+      //         payload: [{name:123,age:18}]
+      //     })
+      // )
       return request.get('/api/users').then(function (result) {
         // console.log(result)
         var list = result.data;

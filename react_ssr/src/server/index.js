@@ -8,7 +8,7 @@ const app = new Koa();
 let router = new KoaRouter()
 
 app.use(proxy("/api",{
-  target:"http://localhost:4000",
+  target:"http://localhost:8081",
   pathRewrite:{'^/api':'/api'},
   changeOrigin:true
 }));
@@ -26,6 +26,6 @@ app.use(async (ctx,next)=>{
 // app.use(router.allowedMethods());
 // console.log(process.cwd())
 
-app.listen(9000, function () {
+app.listen(8080, function () {
   console.log('start')
 })

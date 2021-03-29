@@ -8,27 +8,28 @@ import { getServerStore } from '../store';
 
 export default async function (ctx,next) {
   let store = getServerStore(ctx);
-  
+  let context = {css:[]}
   let matchedRoutes = matchRoutes(routes,ctx.path)
   let promises=[];
   console.log('matchedRoutes',matchedRoutes)
   matchedRoutes.forEach(item => {
-
+    console.log('item',item)
     if (item.route.loadData) {
-      // console.dir(route.loadData())
        promises.push(item.route.loadData(store))
     }
   })
-  await Promise.all(promises);
-    let html = await Promise.resolve(renderToString(
+  console.log('promises', promises)
+    await Promise.all(promises);
+    let html = renderToString(
       <Provider store={store}>
-        <StaticRouter context={{}} location={ctx.path}>
+        <StaticRouter context={context} location={ctx.path}>
           
           {renderRoutes(routes)}
         </StaticRouter>
       </Provider>
   
-    ))
+    )
+  let cssStr = context.css.length>0 && context.csses.join('\n');
     ctx.body = `
       <!DOCTYPE html>
         <html lang="en">
@@ -37,6 +38,7 @@ export default async function (ctx,next) {
           <meta http-equiv="X-UA-Compatible" content="IE=edge">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Document</title>
+          <style>${cssStr}</style>
         </head>
         <body>
             <div id="root">${html}</div>
