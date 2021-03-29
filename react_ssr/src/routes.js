@@ -5,6 +5,7 @@ import Counter from './containers/Counter';
 import User from './containers/User/index';
 import UserDetail from './containers/User/detail';
 import App from './containers/App';
+import NotFound from './containers/NotFound';
 export default [
   {
     path:'/',
@@ -22,6 +23,10 @@ export default [
         path: '/counter',
         component: Counter,
         key: 'login',
+      },
+      {
+        component: NotFound,
+        key: 'notfound',
       },
       // {
       //   path: '/user',

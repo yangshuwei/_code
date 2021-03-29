@@ -182,6 +182,34 @@ Home.loadData = function (store) {
 
 /***/ }),
 
+/***/ "./src/containers/NotFound/index.js":
+/*!******************************************!*\
+  !*** ./src/containers/NotFound/index.js ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+
+var NotFound = function NotFound(props) {
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect)(function () {
+    console.group('props2', props);
+    return function () {
+      console.group('props2', props);
+    };
+  }, []);
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, "404");
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (NotFound);
+
+/***/ }),
+
 /***/ "./src/containers/User/detail.js":
 /*!***************************************!*\
   !*** ./src/containers/User/detail.js ***!
@@ -245,6 +273,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _containers_User_index__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./containers/User/index */ "./src/containers/User/index.js");
 /* harmony import */ var _containers_User_detail__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./containers/User/detail */ "./src/containers/User/detail.js");
 /* harmony import */ var _containers_App__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./containers/App */ "./src/containers/App.js");
+/* harmony import */ var _containers_NotFound__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./containers/NotFound */ "./src/containers/NotFound/index.js");
+
 
 
 
@@ -266,6 +296,9 @@ __webpack_require__.r(__webpack_exports__);
     path: '/counter',
     component: _containers_Counter__WEBPACK_IMPORTED_MODULE_3__.default,
     key: 'login'
+  }, {
+    component: _containers_NotFound__WEBPACK_IMPORTED_MODULE_7__.default,
+    key: 'notfound'
   } // {
   //   path: '/user',
   //   component: User,
@@ -341,19 +374,15 @@ function _ref() {
             };
             matchedRoutes = (0,react_router_config__WEBPACK_IMPORTED_MODULE_6__.matchRoutes)(_routes__WEBPACK_IMPORTED_MODULE_5__.default, ctx.path);
             promises = [];
-            console.log('matchedRoutes', matchedRoutes);
             matchedRoutes.forEach(function (item) {
-              console.log('item', item);
-
               if (item.route.loadData) {
                 promises.push(item.route.loadData(store));
               }
             });
-            console.log('promises', promises);
-            _context.next = 9;
+            _context.next = 7;
             return Promise.all(promises);
 
-          case 9:
+          case 7:
             html = (0,react_dom_server__WEBPACK_IMPORTED_MODULE_3__.renderToString)( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default().createElement(react_redux__WEBPACK_IMPORTED_MODULE_7__.Provider, {
               store: store
             }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2___default().createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.StaticRouter, {
@@ -363,7 +392,7 @@ function _ref() {
             cssStr = context.css.length > 0 && context.csses.join('\n');
             ctx.body = "\n      <!DOCTYPE html>\n        <html lang=\"en\">\n        <head>\n          <meta charset=\"UTF-8\">\n          <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n          <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n          <title>Document</title>\n          <style>".concat(cssStr, "</style>\n        </head>\n        <body>\n            <div id=\"root\">").concat(html, "</div>\n            <script>\n              window.context = {\n                state:").concat(JSON.stringify(store.getState()), "\n              }\n            </script>\n            <script src=\"/index.js\"></script>\n        </body>\n        </html>\n    ");
 
-          case 12:
+          case 10:
           case "end":
             return _context.stop();
         }
@@ -388,9 +417,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "axios");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (axios__WEBPACK_IMPORTED_MODULE_0___default().create({
-  baseURL: 'http://localhost:8081/'
-}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (function (ctx) {
+  return axios__WEBPACK_IMPORTED_MODULE_0___default().create({
+    baseURL: 'http://localhost:8081/',
+    headers: {
+      cookies: ctx.cookies.get('cookie') || ''
+    }
+  });
+});
 
 /***/ }),
 
@@ -502,8 +536,8 @@ function getClientStore() {
   var initState = window.context.state;
   return (0,redux__WEBPACK_IMPORTED_MODULE_0__.createStore)(_reducers__WEBPACK_IMPORTED_MODULE_3__.default, initState, (0,redux__WEBPACK_IMPORTED_MODULE_0__.applyMiddleware)(redux_thunk__WEBPACK_IMPORTED_MODULE_1___default().withExtraArgument(_client_request__WEBPACK_IMPORTED_MODULE_4__.default), (redux_logger__WEBPACK_IMPORTED_MODULE_2___default())));
 }
-function getServerStore() {
-  return (0,redux__WEBPACK_IMPORTED_MODULE_0__.createStore)(_reducers__WEBPACK_IMPORTED_MODULE_3__.default, (0,redux__WEBPACK_IMPORTED_MODULE_0__.applyMiddleware)(redux_thunk__WEBPACK_IMPORTED_MODULE_1___default().withExtraArgument(_server_request__WEBPACK_IMPORTED_MODULE_5__.default), (redux_logger__WEBPACK_IMPORTED_MODULE_2___default())));
+function getServerStore(ctx) {
+  return (0,redux__WEBPACK_IMPORTED_MODULE_0__.createStore)(_reducers__WEBPACK_IMPORTED_MODULE_3__.default, (0,redux__WEBPACK_IMPORTED_MODULE_0__.applyMiddleware)(redux_thunk__WEBPACK_IMPORTED_MODULE_1___default().withExtraArgument((0,_server_request__WEBPACK_IMPORTED_MODULE_5__.default)(ctx)), (redux_logger__WEBPACK_IMPORTED_MODULE_2___default())));
 }
 
 /***/ }),
@@ -858,17 +892,15 @@ app.use( /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            console.log('=======', ctx.path);
-
             if (!(ctx.path != '/favicon.ico')) {
-              _context.next = 4;
+              _context.next = 3;
               break;
             }
 
-            _context.next = 4;
+            _context.next = 3;
             return (0,_render__WEBPACK_IMPORTED_MODULE_5__.default)(ctx, next);
 
-          case 4:
+          case 3:
           case "end":
             return _context.stop();
         }

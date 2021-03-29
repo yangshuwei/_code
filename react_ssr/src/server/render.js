@@ -11,14 +11,11 @@ export default async function (ctx,next) {
   let context = {css:[]}
   let matchedRoutes = matchRoutes(routes,ctx.path)
   let promises=[];
-  console.log('matchedRoutes',matchedRoutes)
   matchedRoutes.forEach(item => {
-    console.log('item',item)
     if (item.route.loadData) {
        promises.push(item.route.loadData(store))
     }
   })
-  console.log('promises', promises)
     await Promise.all(promises);
     let html = renderToString(
       <Provider store={store}>

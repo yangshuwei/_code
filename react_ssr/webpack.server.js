@@ -12,7 +12,7 @@ module.exports = merge(base, {
   },
   externals: [nodeExternals()],
   module:{
-    roules:[
+    rules:[
       {
         test:/\.css$/,
         use: [

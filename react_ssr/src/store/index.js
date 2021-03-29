@@ -8,7 +8,7 @@ export function getClientStore() {
   let initState = window.context.state;
   return createStore(reducers, initState, applyMiddleware(thunk.withExtraArgument(clientRequest), logger))
 }
-export function getServerStore() {
+export function getServerStore(ctx) {
 
-  return createStore(reducers, applyMiddleware(thunk.withExtraArgument(serverRequest), logger))
+  return createStore(reducers, applyMiddleware(thunk.withExtraArgument(serverRequest(ctx)), logger))
 }

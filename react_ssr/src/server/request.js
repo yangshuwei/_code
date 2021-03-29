@@ -1,4 +1,7 @@
 import axios from 'axios';
-export default axios.create({
-    baseURL: 'http://localhost:8081/'
+export default (ctx)=> axios.create({
+    baseURL: 'http://localhost:8081/',
+    headers:{
+        cookies:ctx.cookies.get('cookie')||''
+    }
 })

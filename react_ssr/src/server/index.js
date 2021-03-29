@@ -15,7 +15,6 @@ app.use(proxy("/api",{
 
 app.use(koaStatic(process.cwd() + '/public'))
 app.use(async (ctx,next)=>{
-  console.log('=======',ctx.path)
   if(ctx.path!='/favicon.ico'){
     await render(ctx,next)
   }

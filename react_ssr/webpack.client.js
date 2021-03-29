@@ -9,7 +9,7 @@ module.exports = merge(base, {
     filename: 'index.js'
   },
   module: {
-    roules: [
+    rules: [
       {
         test: /\.css$/,
         use: [
