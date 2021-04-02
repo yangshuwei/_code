@@ -1,16 +1,25 @@
-import React,{useState} from 'react';
+import React,{Fragment, useState} from 'react';
 import {connect} from 'react-redux'
+import { Redirect } from 'react-router';
 import actions from '../../store/actions/counter'
 const Counter = (props)=>{
-  // const [number,setNumber] = useState(0)
+  const [status,seStatus] = useState(false)
   const countHandler = ()=>{
-    console.log(111)
+   
     
   }
   return(
     <div>
-        <p>{props.number}</p>
-      <button onClick={props.add}>+</button>
+      {
+        status ? <Fragment>
+          <p>{props.number}</p>
+          <button onClick={props.add}>+</button>
+        </Fragment>
+        : <Fragment>
+          <Redirect to="/" />
+        </Fragment>
+      }
+     
     </div>
   )
 }

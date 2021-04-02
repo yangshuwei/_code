@@ -1,11 +1,15 @@
 import React,{Fragment} from 'react';
 import {Link} from 'react-router-dom';
+import styles from './header.css'
 
 const Header = (props)=>{
+  if(props.staticContext){
+    props.staticContext.csses.push(styles._getCss())
+  }
   return(
     <Fragment>
       <div>
-        <ul>
+        <ul className="clo">
           <li>
             <Link to="/">Home</Link>
           </li>

@@ -8,12 +8,13 @@ import { getServerStore } from '../store';
 
 export default async function (ctx,next) {
   let store = getServerStore(ctx);
-  let context = {css:[]}
+  let context = {csses:[]}
   let matchedRoutes = matchRoutes(routes,ctx.path)
   let promises=[];
   matchedRoutes.forEach(item => {
     if (item.route.loadData) {
-       promises.push(item.route.loadData(store))
+      let promise = new Promise(resolve => item.route.loadData(store).then(resolve, resolve))
+      promises.push(promise)
     }
   })
     await Promise.all(promises);
@@ -26,7 +27,16 @@ export default async function (ctx,next) {
       </Provider>
   
     )
-  let cssStr = context.css.length>0 && context.csses.join('\n');
+  let cssStr = context.csses.join('\n');
+  console.log('cssStr', cssStr)
+    console.log('context',context)
+    if(context.action == 'REPLACE'){
+      ctx.status = 302;
+      return ctx.redirect(context.url)
+    }else if(context.notfound){
+      ctx.status = 404
+    }
+  
     ctx.body = `
       <!DOCTYPE html>
         <html lang="en">

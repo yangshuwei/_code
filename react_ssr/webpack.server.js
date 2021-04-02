@@ -17,7 +17,12 @@ module.exports = merge(base, {
         test:/\.css$/,
         use: [
           'isomorphic-style-loader',
-          'css-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              esModule: false,
+            }
+          }
         ]
       }
     ]
