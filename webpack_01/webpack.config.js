@@ -63,16 +63,16 @@ module.exports=smv.wrap({
       //     }
       //   }
       // },
-      {
-        test:/\.png|jpg$/,
-        use:{
-          loader:'url-loader',
-          options:{
-            filename:'[hash].[ext]',
-            limit:8*1024
-          }
-        }
-      }
+      // {
+      //   test:/\.png|jpg$/,
+      //   use:{
+      //     loader:'url-loader',
+      //     options:{
+      //       filename:'[hash].[ext]',
+      //       limit:8*1024
+      //     }
+      //   }
+      // }
     ]
   },
   plugins:[
@@ -87,9 +87,9 @@ module.exports=smv.wrap({
     //   manifest:require('./dist/utils.mainfest.json')
     // })
     // new CleanWebpackPlugin(),
-    new ClearWebpackExcludeDll({
-      exclude:['_dll_utils.js','utils.mainfest.json']
-    })
+    // new ClearWebpackExcludeDll({
+    //   exclude:['_dll_utils.js','utils.mainfest.json']
+    // })
   ],
   devServer:{
     contentBase:path.resolve(__dirname,'dist'),
