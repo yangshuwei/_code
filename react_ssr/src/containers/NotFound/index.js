@@ -1,11 +1,9 @@
-import React,{useEffect,useContext,useLayoutEffect} from 'react';
+import React,{useEffect,useContext,useLayoutEffect,getSnapshotBeforeUpdate} from 'react';
 let NotFound = (props)=>{
-    useLayoutEffect(()=>{
-        console.group('props2',props)
-    return ()=>{
-        console.group('props2',props)
-    }
-  },[])
+  if(props.staticContext){
+    props.staticContext.notfound = true;
+  }
+  
   return(
     <div>
       404
