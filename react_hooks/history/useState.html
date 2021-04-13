@@ -12,7 +12,7 @@
       let hookStates = [];
       let hookIndex = 0;
       function useState(initState) {
-        debugger
+        
         hookStates[hookIndex] = hookStates[hookIndex] || (
           typeof initState === 'function'
           ? initState()
@@ -25,6 +25,7 @@
             ? newState(hookStates[currentIndex])
             : newState;
           //更新上一次的值
+          console.log('setState-currentIndex',currentIndex)
           render()
         }
         return [
@@ -36,9 +37,32 @@
       function render() {
         console.log('render', hookStates, hookIndex)
       }
-      const [num, setNum] = useState(0)
+      // const [num, setNum] = useState(0)
+      debugger
       const [name, setName] = useState('zs')
+
       setName('ls')
+      console.log(name)
+    </script>
+    <script>
+      function a(age){
+        console.log(age)
+        var age= 20;
+        function age() {}
+        console.log(age)
+      }
+      a(18)
+
+
+      Promise.resolve().then(()=>{
+        console.log('a')
+        return new Error('error')
+      }).then(()=>{
+        console.log('b')
+      }).catch(err=>{
+        console.log('c')
+      })
     </script>
   </body>
 </html>
+

@@ -27,7 +27,7 @@ class Promise {
             if (this.status == STATUS.PENDING) {
                 this.status = STATUS.FULFILED
                 this.value = val;
-                console.log(this.onResolvedCallbacks,val)
+                // console.log(this.onResolvedCallbacks,val)
                 this.onResolvedCallbacks.forEach(fn => {
                     fn()
                 });
@@ -44,6 +44,7 @@ class Promise {
         try {
             executor(resolve, reject)
         } catch (error) {
+            console.log('返回了error')
             reject(error)
         }
     }
